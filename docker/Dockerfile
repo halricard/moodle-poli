@@ -53,4 +53,9 @@ RUN a2enmod rewrite ssl headers \
 RUN if [ "${HOST_GID}" != "33" ]; then groupmod -g "${HOST_GID}" www-data || true; fi \
     && if [ "${HOST_UID}" != "33" ]; then usermod  -u "${HOST_UID}" www-data || true; fi
 
+COPY docker/entrypoint.sh /usr/local/bin/moodle-entrypoint.sh
+RUN chmod +x /usr/local/bin/moodle-entrypoint.sh
+
 WORKDIR /var/www/html
+
+ENTRYPOINT ["/usr/local/bin/moodle-entrypoint.sh"]

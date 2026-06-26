@@ -22,7 +22,7 @@ services:
       retries: 20
 
   moodle:
-    build:
+    build: &moodle_build
       context: .
       dockerfile: docker/Dockerfile
       args:
@@ -43,12 +43,14 @@ services:
       - "${HTTPS_PORT:-443}:443"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+      - "moodle.localhost:127.0.0.1"
     volumes:
       - ./moodle:/var/www/html
       - ./moodledata:/var/www/moodledata
       - ./docker/certs:/etc/apache2/certs:ro
 
   cron:
+    build: *moodle_build
     image: moodle-dev:local
     container_name: moodle_cron
     restart: unless-stopped

@@ -56,7 +56,8 @@ ensure_docker() {
 # Setup steps
 # ---------------------------------------------------------------------------
 download_moodle() {
-  if [ -f "${ROOT_DIR}/moodle/version.php" ]; then
+  # Moodle 5.x: version.php fica em public/. config.php indica install já feito.
+  if [ -f "${ROOT_DIR}/moodle/public/version.php" ] || [ -f "${ROOT_DIR}/moodle/config.php" ]; then
     echo "✓ Código do Moodle já presente em ./moodle"
     return 0
   fi
@@ -82,6 +83,8 @@ generate_certs() {
     echo "Gerando certificado confiável com mkcert..."
     mkcert -install >/dev/null 2>&1 || true
     mkcert -cert-file "${cert}" -key-file "${key}" "${MOODLE_HOST}" >/dev/null 2>&1
+    # rootCA p/ o container confiar (requisições server-side do Moodle)
+    cp "$(mkcert -CAROOT)/rootCA.pem" "${ROOT_DIR}/docker/certs/rootCA.pem" 2>/dev/null || true
     echo "✓ Certificado mkcert criado (confiável no navegador)"
   else
     echo "mkcert não encontrado. Gerando self-signed com openssl (navegador exibirá aviso)..."
@@ -89,17 +92,34 @@ generate_certs() {
       -keyout "${key}" -out "${cert}" \
       -subj "/CN=${MOODLE_HOST}" \
       -addext "subjectAltName=DNS:${MOODLE_HOST}" >/dev/null 2>&1
+    # self-signed é sua própria CA
+    cp "${cert}" "${ROOT_DIR}/docker/certs/rootCA.pem"
     echo "✓ Certificado self-signed criado. (Instale mkcert para certificado confiável.)"
   fi
 }
 
 ensure_hosts_entry() {
   if grep -qE "[[:space:]]${MOODLE_HOST}(\$|[[:space:]])" /etc/hosts 2>/dev/null; then
+    echo "✓ ${MOODLE_HOST} já está em /etc/hosts"
     return 0
   fi
-  echo "⚠ '${MOODLE_HOST}' não está em /etc/hosts."
-  echo "  Para acessar, adicione (precisa de sudo):"
-  echo "    echo '127.0.0.1 ${MOODLE_HOST}' | ${SUDO} tee -a /etc/hosts"
+
+  local line="127.0.0.1 ${MOODLE_HOST}"
+
+  # Sem privilégio nenhum disponível: só instrui.
+  if [ "$(id -u)" -ne 0 ] && [ -z "${SUDO}" ]; then
+    echo "⚠ Não consigo escrever em /etc/hosts (sem sudo). Adicione manualmente:"
+    echo "    echo '${line}' | sudo tee -a /etc/hosts"
+    return 0
+  fi
+
+  echo "Adicionando '${MOODLE_HOST}' ao /etc/hosts (pode pedir sua senha)..."
+  if echo "${line}" | ${SUDO} tee -a /etc/hosts >/dev/null 2>&1; then
+    echo "✓ /etc/hosts atualizado"
+  else
+    echo "⚠ Falhou ao escrever /etc/hosts. Adicione manualmente:"
+    echo "    echo '${line}' | sudo tee -a /etc/hosts"
+  fi
 }
 
 wait_db() {
@@ -132,6 +152,12 @@ install_moodle() {
     --adminemail="${MOODLE_ADMIN_EMAIL}" \
     --non-interactive --agree-license
   echo "✓ Moodle instalado"
+
+  # Moodle 5.x: habilita o router (rewrite -> r.php já está no Apache)
+  if ! grep -q "routerconfigured" "${ROOT_DIR}/moodle/config.php"; then
+    sed -i "s#^require_once(__DIR__ . '/lib/setup.php');#\$CFG->routerconfigured = true;\n\nrequire_once(__DIR__ . '/lib/setup.php');#" "${ROOT_DIR}/moodle/config.php"
+    echo "✓ Router habilitado em config.php"
+  fi
 }
 
 configure_mail() {
