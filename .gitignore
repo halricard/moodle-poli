@@ -1,5 +1,13 @@
-# Código do Moodle (baixado pelo dev.sh) - grande, não versionar
-/moodle/
+# Código do Moodle (baixado pelo dev.sh) - grande, não versionar.
+# Exceção: versiona apenas seus plugins locais em moodle/public/local/.
+# (git exige des-ignorar nível por nível até o alvo)
+/moodle/*
+!/moodle/public/
+/moodle/public/*
+!/moodle/public/local/
+# arquivos do core que vêm dentro de local/ (não são seus)
+/moodle/public/local/readme.txt
+/moodle/public/local/upgrade.txt
 
 # Dados persistentes (binds visíveis no projeto)
 /moodledata/
