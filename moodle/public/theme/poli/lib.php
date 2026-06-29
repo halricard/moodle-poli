@@ -208,6 +208,7 @@ function theme_poli_navbar_style_css($theme): string {
     $css = '';
     switch ($style) {
         case 'none':
+            $css .= '.navbar.fixed-top{background:var(--poli-navbar-bg) !important;}';
             $css .= '.navbar.fixed-top::after{display:none !important;}';
             break;
         case 'accent-solid':

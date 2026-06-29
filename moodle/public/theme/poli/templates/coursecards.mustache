@@ -33,9 +33,25 @@
         </div>
 
         {{#hascourses}}
-            <div class="poli-course-grid">
+            <div class="poli-course-filter" data-region="poli-course-filter"
+                 data-all-label="{{#str}} filterall, theme_poli {{/str}}">
+                <div class="poli-filter-search">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <input type="search" class="poli-filter-input" data-action="poli-filter-search"
+                           placeholder="{{#str}} searchcourses, theme_poli {{/str}}"
+                           aria-label="{{#str}} searchcourses, theme_poli {{/str}}" autocomplete="off">
+                </div>
+                <div class="poli-filter-chips" data-region="poli-filter-chips" role="group"
+                     aria-label="{{#str}} filterbyarea, theme_poli {{/str}}"></div>
+            </div>
+
+            <div class="poli-course-grid" data-region="poli-course-list">
                 {{#courses}}
                     <article class="poli-course-card"
+                             data-region="poli-course-card"
+                             data-title="{{ fullname }}"
+                             data-category="{{ categoryname }}"
+                             data-enrolled="{{#enrolled}}1{{/enrolled}}{{^enrolled}}0{{/enrolled}}"
                              style="--poli-card-start: {{ accentstart }}; --poli-card-end: {{ accentend }};">
                         <div class="poli-course-media">
                             {{#hasimage}}
@@ -69,6 +85,10 @@
                     </article>
                 {{/courses}}
             </div>
+            <div class="poli-empty poli-filter-empty" data-region="poli-filter-empty" hidden>
+                <i class="fa fa-search fa-2x mb-2 d-block" aria-hidden="true"></i>
+                {{#str}} noresults, theme_poli {{/str}}
+            </div>
         {{/hascourses}}
         {{^hascourses}}
             <div class="poli-empty">
@@ -78,3 +98,101 @@
         {{/hascourses}}
     </div>
 </section>
+{{#js}}
+(function() {
+    var roots = document.querySelectorAll('[data-region="poli-course-filter"]');
+    roots.forEach(function(root) {
+        if (root.dataset.poliFilterReady) {
+            return;
+        }
+        root.dataset.poliFilterReady = '1';
+
+        var section = root.closest('.poli-section') || document;
+        var list = section.querySelector('[data-region="poli-course-list"]');
+        var chipsBox = root.querySelector('[data-region="poli-filter-chips"]');
+        var input = root.querySelector('[data-action="poli-filter-search"]');
+        var empty = section.querySelector('[data-region="poli-filter-empty"]');
+        if (!list || !chipsBox || !input) {
+            return;
+        }
+
+        var cards = Array.prototype.slice.call(
+            list.querySelectorAll('[data-region="poli-course-card"]'));
+        var allLabel = root.dataset.allLabel || 'All';
+        var query = '';
+        var activeCat = null; // null = all areas.
+
+        var norm = function(s) {
+            s = (s || '').toString().toLowerCase();
+            // Strip accents so "médio" matches "medio".
+            return s.normalize ? s.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : s;
+        };
+
+        // Unique category list (preserve first-seen order).
+        var cats = [];
+        cards.forEach(function(card) {
+            var c = (card.dataset.category || '').trim();
+            if (c && cats.indexOf(c) === -1) {
+                cats.push(c);
+            }
+        });
+
+        var makeChip = function(label, value) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'poli-filter-chip';
+            btn.textContent = label;
+            btn.dataset.value = value === null ? '' : value;
+            btn.setAttribute('aria-pressed', value === activeCat ? 'true' : 'false');
+            if (value === activeCat) {
+                btn.classList.add('is-active');
+            }
+            btn.addEventListener('click', function() {
+                activeCat = value;
+                chipsBox.querySelectorAll('.poli-filter-chip').forEach(function(c) {
+                    var on = c === btn;
+                    c.classList.toggle('is-active', on);
+                    c.setAttribute('aria-pressed', on ? 'true' : 'false');
+                });
+                apply();
+            });
+            return btn;
+        };
+
+        // Only show the area chips when there is more than one area to pick from.
+        if (cats.length > 1) {
+            chipsBox.appendChild(makeChip(allLabel, null));
+            cats.forEach(function(c) {
+                chipsBox.appendChild(makeChip(c, c));
+            });
+        } else {
+            chipsBox.remove();
+        }
+
+        var apply = function() {
+            var visible = 0;
+            cards.forEach(function(card) {
+                var title = norm(card.dataset.title);
+                var cat = (card.dataset.category || '').trim();
+                var matchText = !query || title.indexOf(query) !== -1;
+                var matchCat = activeCat === null || cat === activeCat;
+                var show = matchText && matchCat;
+                card.hidden = !show;
+                if (show) {
+                    visible++;
+                }
+            });
+            if (empty) {
+                empty.hidden = visible !== 0;
+            }
+        };
+
+        input.addEventListener('input', function() {
+            query = norm(input.value.trim());
+            apply();
+        });
+
+        apply();
+    });
+})();
+{{/js}}

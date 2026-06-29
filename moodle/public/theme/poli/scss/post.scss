@@ -73,7 +73,20 @@ h1, h2, h3, h4, h5, h6,
 }
 
 a {
-    transition: color 0.15s ease;
+    color: var(--poli-primary);
+    text-decoration: none;
+    transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+a:hover,
+a:focus,
+a:active {
+    color: #{lighten($poli-brand-primary, 12%)};
+    text-decoration: underline;
+}
+
+a:visited:not(.btn) {
+    color: var(--poli-accent);
 }
 
 ::selection {
@@ -144,6 +157,13 @@ body.pagelayout-coursecategory .poli-catpage {
     }
 }
 
+@include media-breakpoint-down(sm) {
+    body.pagelayout-coursecategory .poli-catpage .courses,
+    body.pagelayout-coursecategory .poli-catpage .course_category_tree .courses {
+        grid-template-columns: 1fr;
+    }
+}
+
 @include media-breakpoint-up(lg) {
     body.pagelayout-coursecategory .poli-catpage .courses,
     body.pagelayout-coursecategory .poli-catpage .course_category_tree .courses {
@@ -205,6 +225,8 @@ body.pagelayout-coursecategory .poli-catpage {
     border: 0;
     box-shadow: 0 8px 20px -8px rgba(var(--poli-accent-rgb), 0.6);
 
+    &:visited { color: #fff; }
+
     &:hover,
     &:focus-visible {
         color: #fff;
@@ -219,16 +241,18 @@ body.pagelayout-coursecategory .poli-catpage {
 
 .btn-poli-ghost {
     color: #fff;
-    background: rgba(#fff, 0.14);
-    border: 1px solid rgba(#fff, 0.4);
-    backdrop-filter: blur(6px);
+        background: rgba(var(--poli-primary-rgb), 0.14);
+        border: 1px solid rgba(var(--poli-primary-rgb), 0.38);
+        backdrop-filter: blur(6px);
 
-    &:hover,
-    &:focus-visible {
-        color: #fff;
-        background: rgba(#fff, 0.24);
-        border-color: rgba(#fff, 0.7);
-    }
+        &:visited { color: #fff; }
+
+        &:hover,
+        &:focus-visible {
+            color: #fff;
+            background: rgba(var(--poli-primary-rgb), 0.24);
+            border-color: rgba(var(--poli-primary-rgb), 0.62);
+        }
 }
 
 // -----------------------------------------------------------------------------
@@ -444,6 +468,89 @@ body.pagelayout-coursecategory .poli-catpage {
 // -----------------------------------------------------------------------------
 // Course cards.
 // -----------------------------------------------------------------------------
+// Course search + area filter toolbar (front page + all-courses).
+.poli-course-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.poli-filter-search {
+    position: relative;
+    flex: 1 1 16rem;
+    min-width: 13rem;
+    max-width: 26rem;
+
+    i {
+        position: absolute;
+        left: 0.95rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--poli-text-muted);
+        pointer-events: none;
+        font-size: 0.95rem;
+    }
+
+    .poli-filter-input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        border-radius: 50rem;
+        background: var(--poli-surface-muted);
+        border: 1px solid var(--poli-border);
+        color: var(--bs-body-color);
+        font-size: 0.95rem;
+        transition: border-color 0.16s ease, box-shadow 0.16s ease;
+
+        &::placeholder { color: var(--poli-text-muted); }
+
+        &:focus {
+            outline: none;
+            border-color: var(--poli-primary);
+            box-shadow: 0 0 0 0.2rem rgba(var(--poli-primary-rgb), 0.2);
+        }
+
+        // Hide the native search clear cross (we keep the field minimal).
+        &::-webkit-search-cancel-button { -webkit-appearance: none; }
+    }
+}
+
+.poli-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.poli-filter-chip {
+    padding: 0.42rem 0.95rem;
+    border-radius: 50rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--poli-text-muted);
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    cursor: pointer;
+    transition: color 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, transform 0.12s ease;
+
+    &:hover {
+        color: var(--bs-body-color);
+        border-color: rgba(var(--poli-primary-rgb), 0.45);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(var(--poli-primary-rgb), 0.25);
+    }
+
+    &.is-active {
+        color: #fff;
+        background: var(--poli-gradient);
+        border-color: transparent;
+    }
+}
+
 .poli-course-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -651,13 +758,13 @@ body.pagelayout-coursecategory .poli-catpage {
         letter-spacing: 0.06em;
         text-transform: uppercase;
         color: #fff;
-        background: rgba(#fff, 0.18);
+        background: rgba(var(--poli-primary-rgb), 0.15);
         padding: 0.3rem 0.75rem;
         border-radius: 50rem;
         text-decoration: none;
         margin-bottom: 1rem;
 
-        &:hover { background: rgba(#fff, 0.3); color: #fff; }
+        &:hover { background: rgba(var(--poli-primary-rgb), 0.24); color: #fff; }
     }
 
     h1 {
@@ -689,12 +796,7 @@ body.pagelayout-coursecategory .poli-catpage {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            border: 2px solid rgba(#fff, 0.85);
-            object-fit: cover;
-            margin-left: -10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-
-            &:first-child { margin-left: 0; }
+            border: 2px solid rgba(var(--poli-primary-rgb), 0.9);
         }
     }
 
@@ -716,12 +818,12 @@ body.pagelayout-coursecategory .poli-catpage {
 
         .progress {
             height: 8px;
-            background: rgba(#fff, 0.25);
+            background: rgba(#fff, 0.12);
             border-radius: 50rem;
         }
 
         .progress-bar {
-            background: #fff;
+            background: var(--poli-primary);
             border-radius: 50rem;
         }
     }
@@ -732,6 +834,129 @@ body.pagelayout-coursecategory .poli-catpage {
 // -----------------------------------------------------------------------------
 #page-footer.footer-popover {
     background: var(--poli-surface) !important;
+}
+
+// =============================================================================
+// Editing mode — ensure every editable surface matches the dark theme.
+// =============================================================================
+body.editing,
+body.editing #page,
+body.editing #page-content,
+body.editing #page.drawers .main-inner,
+body.editing #region-main,
+body.editing .drawer,
+body.editing .drawer-content,
+body.editing .drawerheader,
+body.editing .drawercontent,
+body.editing .drawerheading,
+body.editing .draweractions,
+body.editing .block,
+body.editing .block-region,
+body.editing .block-region .block,
+body.editing .card,
+body.editing .course-content .course-section,
+body.editing .course-content .activity-item,
+body.editing .course-content .sectionname,
+body.editing .activity-item,
+body.editing .list-group-item,
+body.editing .dropdown-menu,
+body.editing .modal-content,
+body.editing .popover {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color) !important;
+    border-color: var(--poli-border) !important;
+}
+
+body.editing a,
+body.editing .nav-link,
+body.editing .dropdown-item,
+body.editing .list-group-item-action,
+body.editing .courseindex-link,
+body.editing .action-menu .dropdown-toggle,
+body.editing .btn-outline-secondary,
+body.editing .btn-outline-primary,
+body.editing .bg-white,
+body.editing .bg-light,
+body.editing .text-bg-light,
+body.editing .list-group-item,
+body.editing .dropdown-menu,
+body.editing .modal-content,
+body.editing .popover,
+body.editing .form-control,
+body.editing .form-select,
+body.editing .custom-select,
+body.editing input,
+body.editing textarea,
+body.editing select,
+body.editing .form-check-input,
+body.editing .form-check-label {
+    color: var(--bs-body-color) !important;
+    background-color: var(--poli-surface) !important;
+    background-image: none !important;
+    border-color: var(--poli-border) !important;
+}
+
+body.editing input::placeholder,
+body.editing textarea::placeholder,
+body.editing .form-control::placeholder,
+body.editing .form-select::placeholder {
+    color: var(--poli-text-muted) !important;
+}
+
+body.editing a:hover,
+body.editing .nav-link:hover,
+body.editing .dropdown-item:hover,
+body.editing .list-group-item-action:hover,
+body.editing .courseindex-link:hover,
+body.editing .action-menu .dropdown-toggle:hover,
+body.editing .btn-outline-secondary:hover,
+body.editing .btn-outline-primary:hover {
+    color: var(--poli-primary) !important;
+    background-color: rgba(var(--poli-primary-rgb), 0.08) !important;
+}
+
+body.editing .btn-outline-secondary,
+body.editing .btn-outline-primary {
+    border-color: rgba(var(--poli-primary-rgb), 0.35) !important;
+    background-color: transparent !important;
+}
+
+body.editing .btn-light,
+body.editing .btn-link,
+body.editing .alert,
+body.editing .toast,
+body.editing .card-header,
+body.editing .card-body,
+body.editing .card-footer {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color) !important;
+    border-color: var(--poli-border) !important;
+}
+
+body.editing .btn-light:hover,
+body.editing .btn-link:hover {
+    background-color: rgba(var(--poli-primary-rgb), 0.08) !important;
+    color: var(--poli-primary) !important;
+}
+
+body.editing .form-check-input:checked {
+    background-color: var(--poli-primary) !important;
+    border-color: var(--poli-primary) !important;
+}
+
+body.editing .dropdown-item.active,
+body.editing .list-group-item.active,
+body.editing .page-item.active .page-link,
+body.editing .courseindex-item.active,
+body.editing .courseindex-link.active {
+    background-color: var(--poli-primary) !important;
+    color: #fff !important;
+    border-color: var(--poli-primary) !important;
+}
+
+body.editing .action-menu .dropdown-toggle,
+body.editing .action-menu .dropdown-toggle:hover {
+    color: var(--bs-body-color) !important;
 }
 
 // -----------------------------------------------------------------------------
@@ -854,8 +1079,8 @@ body.pagelayout-login #page .login-container {
             height: 48px;
             border-radius: 14px;
             font-size: 1.2rem;
-            background: rgba(#fff, 0.16);
-            border: 1px solid rgba(#fff, 0.28);
+            background: rgba(var(--poli-primary-rgb), 0.12);
+            border: 1px solid rgba(var(--poli-primary-rgb), 0.24);
             backdrop-filter: blur(4px);
         }
     }
@@ -953,7 +1178,7 @@ body.pagelayout-login .login-layout-right .login-layout-right-content {
         font-weight: 600;
         padding: 0.35rem 0.8rem;
         border-radius: 50rem;
-        background: rgba(#fff, 0.18);
+        background: rgba(var(--poli-primary-rgb), 0.16);
     }
 }
 
@@ -1375,7 +1600,7 @@ a:focus-visible,
         padding: 0 0.75rem;
         border: 1px solid var(--poli-border);
         border-radius: 50rem;
-        background: rgba(#fff, 0.045);
+        background: rgba(var(--poli-primary-rgb), 0.06);
 
         .input-group {
             align-items: center;
@@ -1400,8 +1625,8 @@ a:focus-visible,
             height: 1.1rem;
             margin-top: 0;
             cursor: pointer;
-            background-color: rgba(#fff, 0.1);
-            border-color: rgba(#fff, 0.24);
+            background-color: rgba(var(--poli-primary-rgb), 0.08);
+            border-color: rgba(var(--poli-primary-rgb), 0.24);
             box-shadow: inset 0 0 0 1px rgba(#000, 0.18);
 
             &:checked {
@@ -2236,27 +2461,33 @@ a.list-group-item-action:hover,
         visibility: visible !important;
     }
 
-    .courseindex-item.active .completioninfo,
-    .courseindex-item.pageitem .completioninfo,
-    .courseindex-link.active .completioninfo,
-    [aria-current="true"] .completioninfo {
+    // -------------------------------------------------------------------------
+    // Completion bullets — a consistent circular dot for EVERY tracked activity,
+    // in both the resting and the active/selected state. Core renders these as
+    // pix icons (hydrated by JS); we hide the icon and draw our own dot so the
+    // states read clearly on dark.
+    //   complete   → filled brand dot
+    //   incomplete → hollow ring
+    //   fail       → magenta dot
+    //   none / NaN → no bullet (labels & untracked resources)
+    // -------------------------------------------------------------------------
+    .completioninfo {
         display: inline-block !important;
-        flex: 0 0 0.62rem !important;
-        width: 0.62rem !important;
-        height: 0.62rem !important;
-        min-width: 0.62rem !important;
-        min-height: 0.62rem !important;
-        margin-inline: 0.35rem 0.55rem !important;
+        align-self: center;
+        flex: 0 0 auto;
+        width: 0.6rem;
+        height: 0.6rem;
+        min-width: 0 !important; // override core min-width: 20px.
+        margin-inline: 0.15rem 0.55rem !important;
         padding: 0 !important;
         border-radius: 50% !important;
-        clip-path: circle(50%) !important;
         color: transparent !important;
-        background: rgba(3, 19, 23, 0.72) !important;
+        background: transparent;
         border: 0 !important;
-        box-shadow: 0 0 0 3px rgba(#031317, 0.14) !important;
-        overflow: hidden !important;
+        overflow: hidden;
         font-size: 0 !important;
         line-height: 0 !important;
+        transition: background-color 0.16s ease, box-shadow 0.16s ease;
 
         .icon,
         img,
@@ -2269,6 +2500,52 @@ a.list-group-item-action:hover,
         &::after {
             content: none !important;
             display: none !important;
+        }
+    }
+
+    // Done → filled brand dot with a soft halo.
+    .completioninfo.completion_complete {
+        background: var(--poli-primary) !important;
+        box-shadow: 0 0 0 3px rgba(var(--poli-primary-rgb), 0.16);
+    }
+
+    // Not yet done → hollow ring in the muted text colour.
+    .completioninfo.completion_incomplete {
+        background: transparent !important;
+        box-shadow: inset 0 0 0 2px rgba(154, 163, 184, 0.65);
+    }
+
+    // Failed condition → magenta dot.
+    .completioninfo.completion_fail {
+        background: var(--poli-accent) !important;
+        box-shadow: 0 0 0 3px rgba(var(--poli-accent-rgb), 0.16);
+    }
+
+    // No completion tracking (labels, untracked resources, pre-hydration NaN
+    // span) → collapse so it leaves no stray gap or phantom dot.
+    .completioninfo.completion_none,
+    .completioninfo:not(.completion_complete):not(.completion_incomplete):not(.completion_fail) {
+        width: 0;
+        margin-inline: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    // Active / selected item sits on the brand-gradient fill — recolour the dots
+    // to dark ink so they stay legible against teal.
+    .courseindex-item.active,
+    .courseindex-item.pageitem,
+    .courseindex-link.active,
+    [aria-current="true"] {
+        .completioninfo.completion_complete,
+        .completioninfo.completion_fail {
+            background: #031317 !important;
+            box-shadow: 0 0 0 3px rgba(#031317, 0.18);
+        }
+
+        .completioninfo.completion_incomplete {
+            background: transparent !important;
+            box-shadow: inset 0 0 0 2px rgba(3, 19, 23, 0.55);
         }
     }
 

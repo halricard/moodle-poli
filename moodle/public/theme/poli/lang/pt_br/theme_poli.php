@@ -49,14 +49,14 @@ $string['brandtertiary_desc'] = 'Uma terceira cor de destaque usada com moderaç
 
 // Navbar appearance.
 $string['navbarstyle'] = 'Estilo da barra de navegação';
-$string['navbarstyle_desc'] = 'Como a barra de navegação é decorada com a cor da marca.';
+$string['navbarstyle_desc'] = 'Como a barra de navegação é decorada com a cor da marca. Escolha um estilo preenchido para ter um fundo colorido, um estilo de acento para uma linha inferior ou Nenhum para manter apenas o fundo escuro.';
 $string['navbarstyle_accentgradient'] = 'Linha de acento — gradiente';
 $string['navbarstyle_accentsolid'] = 'Linha de acento — cor sólida';
 $string['navbarstyle_fillgradient'] = 'Barra preenchida — gradiente';
 $string['navbarstyle_fillsolid'] = 'Barra preenchida — cor sólida';
 $string['navbarstyle_none'] = 'Nenhum';
 $string['navbarcolor'] = 'Cor da barra de navegação';
-$string['navbarcolor_desc'] = 'Qual cor da paleta usar no acento/preenchimento da barra.';
+$string['navbarcolor_desc'] = 'Qual cor da paleta usar no acento/preenchimento da barra. Não tem efeito quando o estilo da barra de navegação estiver definido como Nenhum.';
 $string['palette_primary'] = 'Primária (azul-petróleo)';
 $string['palette_accent'] = 'Destaque (magenta)';
 $string['palette_tertiary'] = 'Terciária (âmbar)';
@@ -109,6 +109,10 @@ $string['viewallcourses'] = 'Ver todos os cursos';
 $string['coursecount'] = '{$a} cursos';
 $string['onecourse'] = '1 curso';
 $string['nocourses'] = 'Nenhum curso disponível ainda.';
+$string['searchcourses'] = 'Buscar cursos…';
+$string['filterbyarea'] = 'Filtrar por área';
+$string['filterall'] = 'Todas as áreas';
+$string['noresults'] = 'Nenhum curso corresponde à sua busca.';
 
 // Course cards / hero.
 $string['enrolled'] = 'Inscrito';

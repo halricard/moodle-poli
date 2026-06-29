@@ -49,14 +49,14 @@ $string['brandtertiary_desc'] = 'A third accent colour used sparingly for emphas
 
 // Navbar appearance.
 $string['navbarstyle'] = 'Navbar style';
-$string['navbarstyle_desc'] = 'How the navigation bar is decorated with the brand colour.';
+$string['navbarstyle_desc'] = 'How the navigation bar is decorated with the brand colour. Choose a filled style for a coloured navbar, an accent style for a branded underline, or None to keep the dark navbar background only.';
 $string['navbarstyle_accentgradient'] = 'Accent line — gradient';
 $string['navbarstyle_accentsolid'] = 'Accent line — solid colour';
 $string['navbarstyle_fillgradient'] = 'Filled navbar — gradient';
 $string['navbarstyle_fillsolid'] = 'Filled navbar — solid colour';
 $string['navbarstyle_none'] = 'None';
 $string['navbarcolor'] = 'Navbar colour';
-$string['navbarcolor_desc'] = 'Which palette colour to use for the navbar accent / fill.';
+$string['navbarcolor_desc'] = 'Which palette colour to use for the navbar accent / fill. This has no effect when Navbar style is set to None.';
 $string['palette_primary'] = 'Primary (teal)';
 $string['palette_accent'] = 'Accent (magenta)';
 $string['palette_tertiary'] = 'Tertiary (amber)';
@@ -109,6 +109,10 @@ $string['viewallcourses'] = 'View all courses';
 $string['coursecount'] = '{$a} courses';
 $string['onecourse'] = '1 course';
 $string['nocourses'] = 'No courses available yet.';
+$string['searchcourses'] = 'Search courses…';
+$string['filterbyarea'] = 'Filter by area';
+$string['filterall'] = 'All areas';
+$string['noresults'] = 'No courses match your search.';
 
 // Course cards / hero.
 $string['enrolled'] = 'Enrolled';
