@@ -322,11 +322,43 @@ function theme_poli_navbar_context(): array {
 
     $theme = theme_config::load('poli');
     $dark = $theme->setting_file_url('logodark', 'logodark');
+    $corelogo = theme_poli_core_admin_logo_url('logo');
+    $compactlogo = theme_poli_core_admin_logo_url('logocompact');
 
-    $ctx['haslogo'] = !empty($dark);
-    $ctx['logodark'] = $dark;
+    $ctx['haslogo'] = !empty($dark) || !empty($corelogo) || !empty($compactlogo);
+    $ctx['logodark'] = $dark ?: ($corelogo ?: $compactlogo);
 
     return $ctx;
+}
+
+/**
+ * Returns the core admin logo URL used by Moodle's Appearance > Logos page.
+ *
+ * @param string $filearea Either logo or logocompact.
+ * @return string
+ */
+function theme_poli_core_admin_logo_url(string $filearea): string {
+    if (!in_array($filearea, ['logo', 'logocompact'], true)) {
+        return '';
+    }
+
+    $filename = get_config('core_admin', $filearea);
+    if (empty($filename)) {
+        return '';
+    }
+
+    $maxwidth = ($filearea === 'logocompact') ? 300 : 0;
+    $maxheight = ($filearea === 'logocompact') ? 300 : 200;
+    $filepath = ((int) $maxwidth . 'x' . (int) $maxheight) . '/';
+
+    return moodle_url::make_pluginfile_url(
+        context_system::instance()->id,
+        'core_admin',
+        $filearea,
+        $filepath,
+        theme_get_revision(),
+        $filename
+    )->out(false);
 }
 
 /**

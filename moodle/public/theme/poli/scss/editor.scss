@@ -5,15 +5,50 @@
 }
 
 html,
-body {
+body,
+body#tinymce,
+body.mce-content-body {
     background: #11131a !important;
     color: #e4e6ed !important;
 }
 
-body {
+body,
+body#tinymce,
+body.mce-content-body {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     line-height: 1.6;
+    min-height: 12rem;
     padding: 0.85rem 1rem;
+    cursor: text;
+    caret-color: #00aec7;
+    pointer-events: auto !important;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+body:focus,
+body#tinymce:focus,
+body.mce-content-body:focus {
+    background: #11131a !important;
+    color: #e4e6ed !important;
+    outline: none !important;
+}
+
+body *,
+body#tinymce *,
+body.mce-content-body * {
+    color: inherit;
+}
+
+p,
+div,
+li {
+    color: #e4e6ed !important;
+}
+
+p {
+    min-height: 1.5em;
+    margin: 0 0 0.75rem;
 }
 
 a {
