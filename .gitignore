@@ -5,6 +5,7 @@
 !/moodle/public/
 /moodle/public/*
 !/moodle/public/local/
+!/moodle/public/theme/
 # arquivos do core que vêm dentro de local/ (não são seus)
 /moodle/public/local/readme.txt
 /moodle/public/local/upgrade.txt

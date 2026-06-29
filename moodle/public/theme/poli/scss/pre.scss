@@ -1,0 +1,77 @@
+// Poli theme — pre SCSS.
+// Brand variables injected BEFORE the Boost/Bootstrap preset chain.
+// Plain values only (design-system tokens are not yet available here).
+// All declared with !default so admin colour-picker settings (injected by the
+// pre-scss callback ahead of this file) take precedence.
+
+// -----------------------------------------------------------------------------
+// Poliedro brand palette (from the logo).
+// -----------------------------------------------------------------------------
+$poli-brand-primary:   #00AEC7 !default; // Teal.
+$poli-brand-accent:    #E6007E !default; // Magenta.
+$poli-brand-tertiary:  #FFC400 !default; // Amber.
+$poli-ink:             #1E2030 !default; // Deep navy ink.
+
+// Bootstrap semantic colours — tuned to harmonise with the brand palette.
+$primary:    $poli-brand-primary !default;
+$info:       $poli-brand-primary !default;
+$danger:     $poli-brand-accent !default;
+$warning:    $poli-brand-tertiary !default;
+$success:    $poli-brand-primary !default; // Brand cyan/teal (per request — no green).
+$teal:       $poli-brand-primary !default;
+$green:      $poli-brand-primary !default;
+
+// -----------------------------------------------------------------------------
+// Typography.
+// -----------------------------------------------------------------------------
+$font-family-sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$headings-font-family: "Poppins", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !default;
+$headings-font-weight: 700 !default;
+$headings-letter-spacing: -0.02em;
+$display-font-weight: 800 !default;
+$lead-font-weight: 400 !default;
+
+// -----------------------------------------------------------------------------
+// Shape & depth.
+// -----------------------------------------------------------------------------
+$border-radius:       0.75rem !default;
+$border-radius-sm:    0.5rem !default;
+$border-radius-lg:    1rem !default;
+$border-radius-xl:    1.25rem !default;
+$border-radius-xxl:   1.75rem !default;
+$border-radius-pill:  50rem !default;
+
+$box-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.10) !default;
+$box-shadow:    0 4px 6px -2px rgba(16, 24, 40, 0.06), 0 12px 16px -4px rgba(16, 24, 40, 0.10) !default;
+$box-shadow-lg: 0 8px 8px -4px rgba(16, 24, 40, 0.04), 0 20px 24px -4px rgba(16, 24, 40, 0.12) !default;
+
+// Links.
+$link-decoration:       none !default;
+$link-hover-decoration: underline !default;
+
+// Focus ring — subtle brand teal (Boost/MDS default is a heavy magenta ring).
+$focus-ring-width:      0.2rem !default;
+$focus-ring-opacity:    0.25 !default;
+$focus-ring-color:      rgba($poli-brand-primary, 0.35) !default;
+$focus-ring-blur:       0 !default;
+$input-btn-focus-color: rgba($poli-brand-primary, 0.25) !default;
+$input-focus-border-color: $poli-brand-primary !default;
+$component-active-bg:   $poli-brand-primary !default;
+
+// Buttons.
+$btn-font-weight:       600 !default;
+$btn-padding-y:         0.5625rem !default;
+$btn-padding-x:         1.125rem !default;
+$btn-border-radius:     0.625rem !default;
+$btn-border-radius-lg:  0.875rem !default;
+
+// Cards.
+$card-border-width:     0 !default;
+$card-border-radius:    1rem !default;
+$card-spacer-y:         1.25rem !default;
+$card-spacer-x:         1.25rem !default;
+
+// Navbar.
+$navbar-padding-y:      0.5rem !default;

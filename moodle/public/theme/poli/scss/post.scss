@@ -1,0 +1,2455 @@
+// =============================================================================
+// Poli theme — post SCSS (components, polish, light/dark).
+// Injected AFTER the full Bootstrap + Moodle preset chain, so all Bootstrap
+// variables, functions and mixins are available here.
+// Theme-adaptive values are driven by CSS custom properties so the same markup
+// responds to [data-bs-theme="light"|"dark"] without duplicated rules.
+// =============================================================================
+
+// Fonts (Inter + Poppins) are loaded via <link> in head.mustache — scssphp
+// cannot resolve a remote @import, so it must not live in SCSS.
+
+// -----------------------------------------------------------------------------
+// Design tokens.
+// -----------------------------------------------------------------------------
+:root {
+    --poli-primary: #{$poli-brand-primary};
+    --poli-primary-rgb: #{red($poli-brand-primary)}, #{green($poli-brand-primary)}, #{blue($poli-brand-primary)};
+    --poli-accent: #{$poli-brand-accent};
+    --poli-accent-rgb: #{red($poli-brand-accent)}, #{green($poli-brand-accent)}, #{blue($poli-brand-accent)};
+    --poli-tertiary: #{$poli-brand-tertiary};
+
+    --poli-gradient: linear-gradient(120deg, #{$poli-brand-primary} 0%, #{mix($poli-brand-primary, $poli-brand-accent, 55%)} 48%, #{$poli-brand-accent} 100%);
+    --poli-gradient-soft: linear-gradient(120deg, #{rgba($poli-brand-primary, 0.10)} 0%, #{rgba($poli-brand-accent, 0.05)} 100%);
+
+    // Surfaces (light).
+    --poli-surface: #ffffff;
+    --poli-surface-muted: #f4f7fb;
+    --poli-border: #{rgba(#1e2030, 0.08)};
+    --poli-text-muted: #5b6478;
+
+    --poli-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+    --poli-shadow: 0 6px 16px -6px rgba(16, 24, 40, 0.12), 0 12px 28px -12px rgba(16, 24, 40, 0.14);
+    --poli-shadow-lg: 0 18px 40px -12px rgba(16, 24, 40, 0.22);
+
+    --poli-navbar-bg: #{rgba(#ffffff, 0.82)};
+    --poli-radius-xl: 1.25rem;
+}
+
+[data-bs-theme="dark"] {
+    // Cohesive Poli dark palette.
+    --poli-surface: #181b24;
+    --poli-surface-muted: #11131a;
+    --poli-border: #{rgba(#ffffff, 0.09)};
+    --poli-text-muted: #9aa3b8;
+
+    --poli-gradient-soft: linear-gradient(120deg, #{rgba($poli-brand-primary, 0.16)} 0%, #{rgba($poli-brand-accent, 0.08)} 100%);
+
+    --poli-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --poli-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.55);
+    --poli-shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.6);
+
+    --poli-navbar-bg: #{rgba(#11131a, 0.82)};
+
+    // Drive ALL Bootstrap/Moodle components from one consistent dark scale.
+    --bs-body-bg: #0e0f14;
+    --bs-body-bg-rgb: 14, 15, 20;
+    --bs-body-color: #e4e6ed;
+    --bs-body-color-rgb: 228, 230, 237;
+    --bs-emphasis-color: #ffffff;
+    --bs-emphasis-color-rgb: 255, 255, 255;
+    --bs-secondary-bg: #181b24;
+    --bs-secondary-bg-rgb: 24, 27, 36;
+    --bs-tertiary-bg: #11131a;
+    --bs-tertiary-bg-rgb: 17, 19, 26;
+    --bs-secondary-color: #{rgba(#e4e6ed, 0.7)};
+    --bs-tertiary-color: #{rgba(#e4e6ed, 0.5)};
+    --bs-border-color: #{rgba(#ffffff, 0.09)};
+    --bs-border-color-translucent: #{rgba(#ffffff, 0.12)};
+    --bs-card-bg: #181b24;
+    --bs-card-cap-bg: #1c2029;
+    --bs-heading-color: #f4f5f8;
+}
+
+// -----------------------------------------------------------------------------
+// Base.
+// -----------------------------------------------------------------------------
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bs-body-bg);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: $headings-font-family;
+    letter-spacing: -0.02em;
+}
+
+a {
+    transition: color 0.15s ease;
+}
+
+::selection {
+    background: rgba(var(--poli-accent-rgb), 0.25);
+}
+
+// Utility: gradient text.
+.poli-text-gradient {
+    background: var(--poli-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+// Centered content container for the marketing home.
+.poli-container {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+// Reusable section heading block.
+.poli-section {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+// =============================================================================
+// Front page — full-bleed marketing canvas (escape Boost's white "page" card).
+// =============================================================================
+body.pagelayout-frontpage,
+body.pagelayout-coursecategory {
+    #page.drawers .main-inner {
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    #region-main,
+    #region-main-box {
+        background: transparent !important;
+        padding: 0;
+        border: 0;
+    }
+
+    #page-content { padding: 0; }
+
+    .drawer-toggles {
+        position: absolute;
+        right: 1rem;
+        top: 0.5rem;
+        z-index: 2;
+    }
+}
+
+// Course listing / all courses: full-width 3-column card grid (like the home).
+body.pagelayout-coursecategory .poli-catpage {
+    padding-top: 1.5rem;
+
+    .courses,
+    .course_category_tree .courses {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    body.pagelayout-coursecategory .poli-catpage .courses,
+    body.pagelayout-coursecategory .poli-catpage .course_category_tree .courses {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.poli-section-head {
+    margin-bottom: 2rem;
+
+    .poli-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--poli-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    h2 {
+        font-size: clamp(1.6rem, 3vw, 2.25rem);
+        font-weight: 800;
+        margin: 0;
+    }
+
+    p {
+        color: var(--poli-text-muted);
+        margin: 0.35rem 0 0;
+        font-size: 1.0625rem;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Buttons.
+// -----------------------------------------------------------------------------
+.btn {
+    font-weight: 600;
+    transition: transform 0.12s ease, box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.btn-primary {
+    --bs-btn-bg: #{$poli-brand-primary};
+    --bs-btn-border-color: #{$poli-brand-primary};
+    --bs-btn-hover-bg: #{darken($poli-brand-primary, 6%)};
+    --bs-btn-hover-border-color: #{darken($poli-brand-primary, 8%)};
+    --bs-btn-active-bg: #{darken($poli-brand-primary, 10%)};
+    --bs-btn-color: #fff;
+    --bs-btn-hover-color: #fff;
+}
+
+// Brand gradient call-to-action.
+.btn-poli {
+    --bs-btn-color: #fff;
+    color: #fff;
+    background: var(--poli-gradient);
+    border: 0;
+    box-shadow: 0 8px 20px -8px rgba(var(--poli-accent-rgb), 0.6);
+
+    &:hover,
+    &:focus-visible {
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px -10px rgba(var(--poli-accent-rgb), 0.7);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btn-poli-ghost {
+    color: #fff;
+    background: rgba(#fff, 0.14);
+    border: 1px solid rgba(#fff, 0.4);
+    backdrop-filter: blur(6px);
+
+    &:hover,
+    &:focus-visible {
+        color: #fff;
+        background: rgba(#fff, 0.24);
+        border-color: rgba(#fff, 0.7);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Navbar.
+// -----------------------------------------------------------------------------
+.navbar.fixed-top {
+    background: var(--poli-navbar-bg) !important;
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--poli-border);
+    box-shadow: none;
+}
+
+.navbar .navbar-brand img.logo {
+    max-height: 34px;
+    width: auto;
+}
+
+// Light/dark toggle.
+.poli-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--poli-border);
+    background: transparent;
+    color: var(--bs-body-color);
+    align-self: center;
+    transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+
+    &:hover {
+        background: var(--poli-surface-muted);
+        color: var(--poli-primary);
+        transform: rotate(-15deg);
+    }
+
+    .poli-icon-light { display: none; }
+    .poli-icon-dark { display: inline-block; }
+}
+
+[data-bs-theme="dark"] .poli-theme-toggle {
+    .poli-icon-light { display: inline-block; }
+    .poli-icon-dark { display: none; }
+}
+
+// -----------------------------------------------------------------------------
+// Front page hero.
+// -----------------------------------------------------------------------------
+.poli-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 0 0 2.5rem 2.5rem;
+    margin-bottom: clamp(1rem, 3vw, 2rem);
+    padding: clamp(4rem, 9vw, 8rem) 0 clamp(4.5rem, 10vw, 9rem);
+    color: #fff;
+    background: var(--poli-gradient);
+    background-size: cover;
+    background-position: center;
+
+    // Optional admin image overlay.
+    &[style*="--poli-hero-image"]::before,
+    & {
+        // fallback handled below
+    }
+
+    &::after {
+        // Decorative mesh glow.
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background:
+            radial-gradient(60% 80% at 85% 10%, rgba(#fff, 0.25), transparent 60%),
+            radial-gradient(50% 60% at 10% 100%, rgba(var(--poli-accent-rgb), 0.55), transparent 60%);
+        mix-blend-mode: screen;
+        pointer-events: none;
+    }
+
+    .poli-hero-image-layer {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background-image: var(--poli-hero-image, none);
+        background-size: cover;
+        background-position: center;
+    }
+
+    .poli-hero-image-layer + .poli-hero-scrim {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(120deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.2));
+    }
+
+    h1 {
+        font-size: clamp(2.1rem, 5vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.08;
+        margin-bottom: 1rem;
+        text-wrap: balance;
+    }
+
+    .poli-hero-lead {
+        font-size: clamp(1.05rem, 2vw, 1.3rem);
+        font-weight: 400;
+        max-width: 42ch;
+        opacity: 0.95;
+        margin-bottom: 1.75rem;
+    }
+
+    .poli-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+    }
+}
+
+// Floating stat chips inside the hero.
+.poli-hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+
+    .poli-hero-stat {
+        .poli-hero-stat-value {
+            font-family: $headings-font-family;
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .poli-hero-stat-label {
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+    }
+}
+
+.poli-hero-art {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.1rem;
+    align-items: stretch;
+
+    .poli-hero-tile {
+        aspect-ratio: 1;
+        border-radius: 1.25rem;
+        background: rgba(#fff, 0.12);
+        border: 1px solid rgba(#fff, 0.22);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #fff;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+
+        &:hover {
+            transform: translateY(-4px);
+            background: rgba(#fff, 0.2);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Category explorer.
+// -----------------------------------------------------------------------------
+.poli-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.poli-category-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.5rem;
+    border-radius: var(--poli-radius-xl);
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+    color: var(--bs-body-color);
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        top: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--poli-cat-start), var(--poli-cat-end));
+        opacity: 0;
+        transition: opacity 0.18s ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+        transform: translateY(-4px);
+        box-shadow: var(--poli-shadow);
+        border-color: transparent;
+        color: var(--bs-body-color);
+
+        &::before { opacity: 1; }
+        .poli-category-icon { transform: scale(1.06) rotate(-4deg); }
+    }
+
+    .poli-category-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        font-size: 1.4rem;
+        color: #fff;
+        background: linear-gradient(135deg, var(--poli-cat-start), var(--poli-cat-end));
+        box-shadow: 0 8px 18px -8px var(--poli-cat-end);
+        transition: transform 0.18s ease;
+    }
+
+    .poli-category-name {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .poli-category-count {
+        font-size: 0.875rem;
+        color: var(--poli-text-muted);
+        margin: 0;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Course cards.
+// -----------------------------------------------------------------------------
+.poli-course-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+}
+
+@include media-breakpoint-up(lg) {
+    .poli-course-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@include media-breakpoint-down(sm) {
+    .poli-course-grid { grid-template-columns: 1fr; }
+}
+
+.poli-course-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--poli-radius-xl);
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+    overflow: hidden;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-6px);
+        box-shadow: var(--poli-shadow-lg);
+        border-color: transparent;
+
+        .poli-course-media img { transform: scale(1.06); }
+    }
+
+    .poli-course-media {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--poli-card-start), var(--poli-card-end));
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .poli-course-initials {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: $headings-font-family;
+            font-weight: 800;
+            font-size: 2.75rem;
+            color: rgba(#fff, 0.92);
+            letter-spacing: 0.05em;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+        }
+    }
+
+    .poli-course-chip {
+        position: absolute;
+        top: 0.85rem;
+        left: 0.85rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.65rem;
+        border-radius: 50rem;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(6px);
+    }
+
+    .poli-course-badge-enrolled {
+        position: absolute;
+        top: 0.85rem;
+        right: 0.85rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.3rem 0.6rem;
+        border-radius: 50rem;
+        color: #fff;
+        background: var(--poli-primary);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .poli-course-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        padding: 1.4rem 1.5rem 1.5rem;
+    }
+
+    .poli-course-title {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        font-size: 1.2rem;
+        line-height: 1.3;
+        margin: 0 0 0.6rem;
+
+        a {
+            color: var(--bs-body-color);
+            text-decoration: none;
+
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+            }
+
+            &:hover { color: var(--poli-primary); }
+        }
+    }
+
+    // Anchor the stretched-link to the card.
+    position: relative;
+
+    .poli-course-summary {
+        color: var(--poli-text-muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0 0 1rem;
+        flex: 1 1 auto;
+    }
+
+    .poli-course-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-top: auto;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--poli-border);
+
+        .poli-course-cta {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--poli-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+    }
+
+    &:hover .poli-course-cta i { transform: translateX(3px); }
+    .poli-course-cta i { transition: transform 0.18s ease; }
+}
+
+.poli-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--poli-text-muted);
+    border: 1px dashed var(--poli-border);
+    border-radius: var(--poli-radius-xl);
+}
+
+// -----------------------------------------------------------------------------
+// Course presentation hero.
+// -----------------------------------------------------------------------------
+.poli-course-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--poli-radius-xl);
+    margin-bottom: 1.5rem;
+    padding: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+    // Always the cohesive brand gradient (per-course image adds texture on top).
+    background: var(--poli-gradient);
+
+    // Course image, blended as subtle texture over the brand gradient.
+    .poli-course-hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.35;
+        mix-blend-mode: overlay;
+        transform: scale(1.05);
+    }
+
+    // Left-weighted dark scrim for text legibility + a soft brand glow.
+    .poli-course-hero-scrim {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background:
+            linear-gradient(105deg, rgba(8, 10, 18, 0.66) 0%, rgba(8, 10, 18, 0.28) 55%, rgba(8, 10, 18, 0) 100%),
+            radial-gradient(60% 90% at 92% 8%, rgba(255, 255, 255, 0.18), transparent 60%);
+    }
+
+    .poli-course-hero-cat {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #fff;
+        background: rgba(#fff, 0.18);
+        padding: 0.3rem 0.75rem;
+        border-radius: 50rem;
+        text-decoration: none;
+        margin-bottom: 1rem;
+
+        &:hover { background: rgba(#fff, 0.3); color: #fff; }
+    }
+
+    h1 {
+        font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+        font-weight: 800;
+        margin: 0 0 0.75rem;
+        text-wrap: balance;
+    }
+
+    .poli-course-hero-summary {
+        max-width: 60ch;
+        font-size: 1.05rem;
+        opacity: 0.95;
+        margin-bottom: 1.5rem;
+    }
+
+    .poli-course-hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .poli-teachers {
+        display: flex;
+        align-items: center;
+
+        img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid rgba(#fff, 0.85);
+            object-fit: cover;
+            margin-left: -10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+
+            &:first-child { margin-left: 0; }
+        }
+    }
+
+    .poli-teachers-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+
+    .poli-course-progress {
+        min-width: 200px;
+
+        .poli-progress-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.35rem;
+            opacity: 0.95;
+        }
+
+        .progress {
+            height: 8px;
+            background: rgba(#fff, 0.25);
+            border-radius: 50rem;
+        }
+
+        .progress-bar {
+            background: #fff;
+            border-radius: 50rem;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Footer polish.
+// -----------------------------------------------------------------------------
+#page-footer.footer-popover {
+    background: var(--poli-surface) !important;
+}
+
+// -----------------------------------------------------------------------------
+// Misc adaptive polish for inherited Boost surfaces.
+// -----------------------------------------------------------------------------
+.card {
+    border-radius: $card-border-radius;
+}
+
+.breadcrumb {
+    font-size: 0.9rem;
+}
+
+// Course index / blocks drawer adopt brand active state.
+.courseindex .courseindex-link.active,
+.courseindex .courseindex-item.active {
+    border-color: var(--poli-primary);
+}
+
+// Login page card lift.
+body.pagelayout-login #page .login-container {
+    .card {
+        box-shadow: var(--poli-shadow-lg);
+        border-radius: var(--poli-radius-xl);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Responsive.
+// -----------------------------------------------------------------------------
+@include media-breakpoint-down(md) {
+    .poli-hero {
+        text-align: center;
+
+        .poli-hero-actions { justify-content: center; }
+        .poli-hero-stats { justify-content: center; }
+    }
+
+    .poli-hero-art { display: none; }
+}
+
+// =============================================================================
+// Login / signup / forgot password (split layout).
+// =============================================================================
+.login-layout-left {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: #fff;
+    background: var(--poli-gradient);
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background:
+            radial-gradient(55% 70% at 85% 12%, rgba(#fff, 0.22), transparent 60%),
+            radial-gradient(50% 60% at 5% 100%, rgba(var(--poli-accent-rgb), 0.5), transparent 60%);
+        mix-blend-mode: screen;
+        pointer-events: none;
+    }
+}
+
+.poli-login-panel {
+    max-width: 30rem;
+    padding: 2rem;
+
+    .poli-login-eyebrow {
+        display: inline-block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+    }
+
+    .poli-login-title {
+        font-family: $headings-font-family;
+        font-weight: 800;
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        text-wrap: balance;
+    }
+
+    .poli-login-lead {
+        font-size: 1.05rem;
+        opacity: 0.95;
+        margin-bottom: 1.75rem;
+    }
+
+    .poli-login-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem;
+        text-align: start;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0;
+            font-weight: 500;
+
+            i { color: #fff; opacity: 0.9; }
+        }
+    }
+
+    .poli-login-tiles {
+        display: flex;
+        gap: 0.75rem;
+
+        .poli-login-tile {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            font-size: 1.2rem;
+            background: rgba(#fff, 0.16);
+            border: 1px solid rgba(#fff, 0.28);
+            backdrop-filter: blur(4px);
+        }
+    }
+}
+
+// Right-side form area.
+.login-layout-right .login-container {
+    width: 100%;
+    max-width: 26rem;
+    margin-inline: auto;
+
+    .card {
+        border: 1px solid var(--poli-border);
+        border-radius: var(--poli-radius-xl);
+        box-shadow: var(--poli-shadow-lg);
+        background: var(--poli-surface);
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 0.625rem;
+        padding-block: 0.6rem;
+    }
+}
+
+// Floating colour-scheme toggle on login pages.
+.poli-login-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1030;
+    width: 42px;
+    height: 42px;
+    background: var(--poli-surface);
+    box-shadow: var(--poli-shadow-sm);
+}
+
+// Vertically centre the form column + premium spacing.
+body.pagelayout-login .login-layout-right .login-layout-right-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    padding-block: 3rem;
+}
+
+.login-container {
+    h1 {
+        font-family: $headings-font-family;
+        font-weight: 800;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+        margin-bottom: 0.25rem;
+    }
+
+    .login-form .btn-primary,
+    button[type="submit"].btn-primary {
+        padding-block: 0.7rem;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    label { font-weight: 600; font-size: 0.9rem; }
+
+    a { color: var(--poli-primary); }
+    a:hover { color: var(--poli-primary); text-decoration: underline; }
+}
+
+// =============================================================================
+// Category banner + course listing as cards.
+// =============================================================================
+.poli-cat-banner {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--poli-radius-xl);
+    margin-bottom: 1.75rem;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    color: #fff;
+    background: linear-gradient(120deg, var(--poli-card-start), var(--poli-card-end));
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(60% 80% at 90% 10%, rgba(#fff, 0.22), transparent 60%);
+        mix-blend-mode: screen;
+    }
+
+    h1 {
+        font-weight: 800;
+        font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+        margin: 0 0 0.5rem;
+    }
+
+    .poli-cat-banner-desc {
+        max-width: 60ch;
+        opacity: 0.95;
+        margin: 0 0 1rem;
+    }
+
+    .poli-cat-banner-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.35rem 0.8rem;
+        border-radius: 50rem;
+        background: rgba(#fff, 0.18);
+    }
+}
+
+// Turn the core course listing into a responsive card grid.
+.poli-catpage {
+    .courses,
+    .course_category_tree .courses {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin: 0;
+        padding: 0;
+    }
+
+    .coursebox {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 1.25rem;
+        gap: 0.85rem;
+        border: 1px solid var(--poli-border);
+        border-radius: var(--poli-radius-xl);
+        background: var(--poli-surface);
+        box-shadow: var(--poli-shadow-sm);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--poli-shadow-lg);
+            border-color: transparent;
+
+            .courseimage img { transform: scale(1.04); }
+        }
+
+        // Course name leads the card.
+        .info {
+            order: 0;
+            padding: 0;
+        }
+
+        .coursename {
+            margin: 0;
+            font-family: $headings-font-family;
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.3;
+
+            a { color: var(--bs-body-color); }
+            a:hover { color: var(--poli-primary); }
+        }
+
+        // Image + summary row below.
+        .content {
+            order: 1;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .courseimage {
+            flex: 0 0 96px;
+            width: 96px;
+            height: 96px;
+            border-radius: 0.85rem;
+            overflow: hidden;
+            box-shadow: var(--poli-shadow-sm);
+
+            img,
+            a img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 0;
+                transition: transform 0.4s ease;
+            }
+        }
+
+        .summary {
+            color: var(--poli-text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .coursecat,
+        .teachers {
+            font-size: 0.85rem;
+            color: var(--poli-text-muted);
+        }
+    }
+
+    // Category list items (when browsing all categories).
+    .category .info .categoryname,
+    .course_category_tree .category > .info {
+        font-family: $headings-font-family;
+        font-weight: 700;
+    }
+}
+
+// =============================================================================
+// Dashboard welcome header.
+// =============================================================================
+.poli-welcome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    margin-bottom: 1.5rem;
+    border-radius: var(--poli-radius-xl);
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--poli-gradient-soft);
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    > * { position: relative; }
+
+    .poli-welcome-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--poli-text-muted);
+        margin-bottom: 0.35rem;
+    }
+
+    .poli-welcome-title {
+        font-family: $headings-font-family;
+        font-weight: 800;
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        margin: 0 0 0.25rem;
+    }
+
+    .poli-welcome-sub {
+        color: var(--poli-text-muted);
+        margin: 0;
+    }
+}
+
+.poli-welcome-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+}
+
+.poli-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 104px;
+    padding: 1rem 1.15rem;
+    border-radius: 1rem;
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+    text-decoration: none;
+    color: var(--bs-body-color);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--poli-shadow);
+        color: var(--bs-body-color);
+    }
+
+    .poli-stat-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+
+    .poli-stat-icon-1 { background: linear-gradient(135deg, #00AEC7, #0093A8); }
+    .poli-stat-icon-2 { background: linear-gradient(135deg, #FFC400, #F59E0B); }
+    .poli-stat-icon-3 { background: linear-gradient(135deg, #E6007E, #B80064); }
+
+    .poli-stat-value {
+        font-family: $headings-font-family;
+        font-weight: 800;
+        font-size: 1.5rem;
+        line-height: 1;
+    }
+
+    .poli-stat-label {
+        font-size: 0.8rem;
+        color: var(--poli-text-muted);
+        margin-top: 0.2rem;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .poli-welcome { flex-direction: column; align-items: flex-start; }
+    .poli-welcome-stats { width: 100%; }
+    .poli-stat { flex: 1 1 0; min-width: 0; }
+}
+
+// =============================================================================
+// Focus state — kill the heavy magenta ring, use a subtle brand-teal ring.
+// =============================================================================
+:root {
+    --bs-focus-ring-color: #{rgba($poli-brand-primary, 0.25)};
+}
+
+*:focus-visible {
+    outline: none;
+}
+
+.btn:focus-visible,
+.page-link:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--poli-primary-rgb), 0.28) !important;
+    border-radius: 0.4rem;
+}
+
+// Plain links: no background/ring box when clicked or focused by mouse.
+a:focus,
+a:active,
+a:focus-visible,
+.aalink:focus,
+.aalink:active {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus,
+.custom-select:focus {
+    border-color: var(--poli-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--poli-primary-rgb), 0.2);
+}
+
+.form-check-input:checked {
+    background-color: var(--poli-primary);
+    border-color: var(--poli-primary);
+}
+
+::selection {
+    background: rgba(var(--poli-primary-rgb), 0.22);
+    color: inherit;
+}
+
+// =============================================================================
+// Dark-mode fixes for Moodle/Boost surfaces that use literal light colours
+// (these do not respond to data-bs-theme on their own).
+// =============================================================================
+[data-bs-theme="dark"] {
+    #page.drawers .main-inner,
+    #region-main {
+        background-color: var(--poli-surface) !important;
+    }
+
+    // Footer, drawers and other hard-coded white panels.
+    #page-footer.footer-popover,
+    .footer-content-popover,
+    .drawer,
+    .list-group-item,
+    .dropdown-menu,
+    .modal-content,
+    .popover {
+        background-color: var(--poli-surface) !important;
+        color: var(--bs-body-color);
+    }
+
+    .bg-white { background-color: var(--poli-surface) !important; }
+
+    // Activity / completion "Done" pills and white badges.
+    .badge.bg-light,
+    .course-content .activity-item {
+        color: var(--bs-body-color);
+    }
+
+    // Course index drawer.
+    [data-region="courseindex"],
+    .courseindex {
+        background-color: var(--poli-surface);
+    }
+
+    // Section / activity headings that rely on a light surface for contrast.
+    .course-content .sectionname,
+    .course-content .course-section-header .sectionname,
+    .course-content h3,
+    #region-main h2,
+    #region-main h3 {
+        color: var(--bs-heading-color);
+    }
+
+    // Inputs / selects keep a readable dark field.
+    .form-control,
+    .form-select,
+    .custom-select {
+        background-color: var(--poli-surface-muted);
+        border-color: var(--poli-border);
+        color: var(--bs-body-color);
+    }
+
+    // Subtle elevation border on the main content surface.
+    #page.drawers .main-inner {
+        border: 1px solid var(--poli-border);
+    }
+}
+
+// =============================================================================
+// Navbar — precise, refined, Apple-grade spacing.
+// =============================================================================
+.navbar.fixed-top {
+    min-height: 60px;
+    padding-block: 0;
+
+    .container-fluid {
+        min-height: 60px;
+        gap: 0.25rem;
+        padding-inline: clamp(0.75rem, 2vw, 1.25rem);
+    }
+
+    .navbar-brand {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        font-size: 1.2rem;
+        letter-spacing: -0.02em;
+        color: var(--bs-emphasis-color);
+    }
+
+    // Primary nav links: muted when idle, brand on hover/active, ONE underline.
+    .primary-navigation .nav-link {
+        position: relative;
+        font-weight: 500;
+        padding: 0.5rem 0.9rem;
+        margin-inline: 0.1rem;
+        border: 0 !important;
+        border-radius: 0.6rem;
+        color: var(--poli-text-muted);
+        background: transparent !important;
+        box-shadow: none !important;
+        transition: color 0.15s ease, background-color 0.15s ease;
+
+        // Neutralise Boost/moremenu's own active indicators to avoid doubling.
+        &::before { display: none !important; }
+
+        &:hover,
+        &:focus-visible {
+            color: var(--poli-primary);
+            background: rgba(var(--poli-primary-rgb), 0.08) !important;
+        }
+    }
+
+    // Active item: brand colour + a single gradient underline.
+    .primary-navigation .nav-link.active,
+    .primary-navigation .nav-link[aria-current="page"],
+    .primary-navigation .active > .nav-link {
+        color: var(--bs-emphasis-color);
+        font-weight: 600;
+        background: transparent !important;
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 0.9rem;
+            right: 0.9rem;
+            bottom: -2px;
+            height: 3px;
+            border-radius: 3px;
+            background: var(--poli-primary);
+            z-index: 5;
+        }
+    }
+
+    // Icon buttons (notifications, messages, toggle) share one footprint.
+    .nav-link.icon-no-margin,
+    #usernavigation .btn,
+    .poli-theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .divider.border-start {
+        height: 1.5rem;
+        opacity: 0.6;
+    }
+
+    // User menu avatar refinement.
+    .usermenu .userpicture {
+        width: 30px;
+        height: 30px;
+        box-shadow: 0 0 0 2px var(--poli-border);
+    }
+}
+
+// =============================================================================
+// Internal pages — make every Moodle screen feel intentional.
+// =============================================================================
+
+// Generic page title (full_header) consistency.
+#page-header .page-context-header,
+.secondary-navigation {
+    margin-bottom: 0.5rem;
+}
+
+// Secondary navigation tabs: brand underline, no heavy borders.
+.secondary-navigation,
+.secondary-navigation .moremenu,
+.secondary-navigation .nav-tabs {
+    background-color: transparent;
+}
+
+.secondary-navigation .nav-tabs {
+    border-bottom: 1px solid var(--poli-border);
+
+    .nav-link {
+        font-weight: 600;
+        border: 0;
+        padding: 0.75rem 1rem;
+        color: var(--poli-text-muted);
+
+        &:hover { color: var(--poli-primary); }
+
+        &.active {
+            color: var(--bs-emphasis-color);
+            background: transparent;
+            border-bottom: 2px solid var(--poli-primary);
+        }
+    }
+}
+
+// Course content: section + activity cards.
+.course-content {
+    .course-section,
+    li.section.course-section {
+        border-radius: var(--poli-radius-xl);
+        background: var(--poli-surface);
+        border: 1px solid var(--poli-border);
+        box-shadow: var(--poli-shadow-sm);
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .activity-item {
+        border-radius: 0.85rem;
+        padding: 0.85rem 1rem;
+        transition: background-color 0.15s ease, transform 0.15s ease;
+
+        &:hover {
+            background: var(--poli-surface-muted);
+            transform: translateX(2px);
+        }
+
+        .activityname a,
+        .activityname .instancename {
+            font-weight: 600;
+        }
+    }
+
+    .activityiconcontainer {
+        border-radius: 0.7rem;
+        box-shadow: var(--poli-shadow-sm);
+    }
+}
+
+// Completion "Done" badge → brand-coloured pill.
+.activity-item .badge.badge-none,
+.activity-item .completion-dropdown .btn,
+.btn-success.completioncheck,
+[data-action="toggle-manual-completion"].btn-success {
+    border-radius: 50rem;
+}
+
+// Generic cards across internal pages.
+.block,
+.card {
+    border-radius: var(--poli-radius-xl);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+}
+
+.block .card-title,
+.block h5 {
+    font-family: $headings-font-family;
+    font-weight: 700;
+}
+
+// Breadcrumbs.
+.breadcrumb {
+    padding: 0.5rem 0;
+
+    .breadcrumb-item a { color: var(--poli-text-muted); }
+    .breadcrumb-item a:hover { color: var(--poli-primary); }
+}
+
+// Tables.
+.generaltable,
+.table {
+    border-radius: var(--poli-radius-xl);
+    overflow: hidden;
+}
+
+// Pagination + list-group active states use brand.
+.page-item.active .page-link {
+    background-color: var(--poli-primary);
+    border-color: var(--poli-primary);
+}
+
+.list-group-item.active {
+    background-color: var(--poli-primary);
+    border-color: var(--poli-primary);
+}
+
+// Refine the dashboard "Course overview" block cards (block_myoverview).
+.block_myoverview {
+    .card {
+        border-radius: var(--poli-radius-xl);
+        overflow: hidden;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--poli-shadow);
+        }
+    }
+
+    .progress { height: 6px; border-radius: 50rem; }
+    .progress-bar { background: var(--poli-gradient); }
+}
+
+// =============================================================================
+// Login refinement — clean brand gradient panel (override Boost defaults).
+// =============================================================================
+body.pagelayout-login #page .login-layout-left {
+    background-color: #{$poli-brand-primary} !important;
+    background-image: linear-gradient(125deg, #{$poli-brand-primary} 0%, #{mix($poli-brand-primary, $poli-brand-accent, 50%)} 50%, #{$poli-brand-accent} 100%) !important;
+}
+
+// Remove the default photo watermark pseudo-element.
+body.pagelayout-login #page .login-layout-left::after {
+    content: none !important;
+}
+
+// Drop the default translucent content box — panel sits directly on gradient.
+body.pagelayout-login .login-layout-left-content {
+    background-color: transparent !important;
+    max-width: 32rem !important;
+}
+
+// Dark login form fields.
+[data-bs-theme="dark"] body.pagelayout-login .login-container .form-control {
+    background-color: var(--poli-surface-muted) !important;
+    border-color: var(--poli-border) !important;
+    color: var(--bs-body-color) !important;
+}
+
+// =============================================================================
+// Navbar auth buttons (logged-out: Login / Register).
+// =============================================================================
+.poli-nav-auth .poli-nav-btn {
+    border-radius: 50rem;
+    font-weight: 600;
+    padding-inline: 1.1rem;
+    white-space: nowrap;
+}
+
+.navbar .poli-nav-auth .btn-outline-primary {
+    --bs-btn-color: var(--poli-primary);
+    --bs-btn-border-color: var(--poli-primary);
+    --bs-btn-hover-bg: var(--poli-primary);
+    --bs-btn-hover-border-color: var(--poli-primary);
+    --bs-btn-hover-color: #fff;
+}
+
+// =============================================================================
+// Branded footer.
+// =============================================================================
+.poli-footer {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    padding: clamp(2.5rem, 5vw, 4rem) 0 1.5rem;
+    background: var(--poli-surface-muted);
+    border-top: 1px solid var(--poli-border);
+    color: var(--bs-body-color);
+}
+
+.poli-footer-grid {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr 1fr;
+    gap: 2.5rem;
+}
+
+.poli-footer-logo {
+    font-family: $headings-font-family;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    background: var(--poli-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.poli-footer-tagline {
+    color: var(--poli-text-muted);
+    max-width: 42ch;
+    margin: 0.85rem 0 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.poli-footer-social {
+    display: flex;
+    gap: 0.6rem;
+
+    a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--poli-border);
+        color: var(--poli-text-muted);
+        background: var(--poli-surface);
+        transition: transform 0.18s ease, color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+
+        &:hover {
+            color: #fff;
+            background: var(--poli-gradient);
+            border-color: transparent;
+            transform: translateY(-3px);
+        }
+    }
+}
+
+.poli-footer-col {
+    h4 {
+        font-family: $headings-font-family;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--poli-text-muted);
+        margin-bottom: 1.1rem;
+    }
+
+    a {
+        display: block;
+        color: var(--bs-body-color);
+        padding: 0.35rem 0;
+        font-size: 0.95rem;
+        transition: color 0.15s ease, transform 0.15s ease;
+
+        &:hover {
+            color: var(--poli-primary);
+            transform: translateX(3px);
+        }
+    }
+}
+
+.poli-footer-support a { color: var(--bs-body-color); }
+.poli-footer-support a:hover { color: var(--poli-primary); }
+
+.poli-footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--poli-border);
+    color: var(--poli-text-muted);
+    font-size: 0.875rem;
+}
+
+@include media-breakpoint-down(md) {
+    .poli-footer-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+}
+
+.poli-footer-powered { color: var(--poli-text-muted); }
+
+.poli-footer-meta {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--poli-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+
+    a { color: var(--poli-text-muted); }
+    a:hover { color: var(--poli-primary); }
+    > * { margin: 0; }
+}
+
+// =============================================================================
+// Dark mode — final audit: eliminate any white surface / white-on-hover.
+// =============================================================================
+[data-bs-theme="dark"] {
+    .bg-white,
+    .bg-light,
+    .card-footer,
+    .list-group-item,
+    .table,
+    .table > :not(caption) > * > * {
+        background-color: var(--poli-surface) !important;
+        color: var(--bs-body-color);
+    }
+
+    // Any interactive hover that Boost paints light → use a dark elevation.
+    a.list-group-item-action:hover,
+    .list-group-item-action:hover,
+    .dropdown-item:hover,
+    .dropdown-item:focus,
+    .courseindex-item:hover,
+    .courseindex-link:hover,
+    .activity-item:hover,
+    .menu-action:hover,
+    .nav-tabs .nav-link:hover,
+    .block .list-group-item:hover,
+    .generaltable tbody tr:hover td,
+    .table-hover > tbody > tr:hover > * {
+        background-color: var(--poli-surface-muted) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    // Keep active/selected states branded, not white.
+    .dropdown-item.active,
+    .dropdown-item:active,
+    .list-group-item.active,
+    .page-item.active .page-link {
+        background-color: var(--poli-primary) !important;
+        color: #fff !important;
+        border-color: var(--poli-primary) !important;
+    }
+
+    // Inputs, popovers, tooltips, modals.
+    .modal-content,
+    .popover,
+    .popover-body,
+    .tooltip-inner,
+    .dropdown-menu {
+        background-color: var(--poli-surface) !important;
+        color: var(--bs-body-color);
+        border-color: var(--poli-border);
+    }
+
+    // Course overview block cards keep dark.
+    .block_myoverview .dashboard-card,
+    .block_myoverview .card {
+        background-color: var(--poli-surface) !important;
+    }
+}
+
+// =============================================================================
+// Logo (light / dark) + wordmark fallback.
+// =============================================================================
+.poli-logo {
+    max-height: 38px;
+    width: auto;
+}
+
+[data-bs-theme="light"] .poli-logo-dark,
+[data-bs-theme="dark"] .poli-logo-light {
+    display: none !important;
+}
+
+.poli-wordmark {
+    font-family: $headings-font-family;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+    color: var(--bs-emphasis-color);
+}
+
+// Subtle brand accent line under the navbar (ties the brand in everywhere).
+.navbar.fixed-top {
+    position: relative;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        bottom: 0;
+        height: 2px;
+        background: var(--poli-gradient);
+        opacity: 0.9;
+        z-index: 1;
+        pointer-events: none;
+    }
+}
+
+// =============================================================================
+// Notifications / messages popover region — brand-consistent, light + dark.
+// =============================================================================
+.popover-region {
+    .count-container {
+        background: var(--poli-accent) !important;
+        color: #fff !important;
+        font-weight: 700;
+        border: 0;
+        box-shadow: 0 0 0 2px var(--poli-navbar-bg);
+    }
+
+    .popover-region-container,
+    [data-region="popover-region-container"] {
+        background: var(--poli-surface);
+        border: 1px solid var(--poli-border);
+        border-radius: var(--poli-radius-xl);
+        box-shadow: var(--poli-shadow-lg);
+        overflow: hidden;
+    }
+
+    .popover-region-header-container {
+        border-bottom: 1px solid var(--poli-border);
+        padding: 0.85rem 1rem;
+    }
+
+    .popover-region-header-text { font-weight: 700; }
+
+    .popover-region-content-container .content-item-container:hover,
+    [data-region="content-item-container"]:hover {
+        background: var(--poli-surface-muted);
+    }
+
+    [data-action="mark-all-read"]:hover,
+    .mark-all-read-button:hover {
+        color: var(--poli-primary);
+    }
+}
+
+// =============================================================================
+// Course content — clean, intentional sections & activities.
+// =============================================================================
+.course-content {
+    .course-section,
+    li.section.course-section {
+        position: relative;
+        background: var(--poli-surface);
+        border: 1px solid var(--poli-border);
+        border-radius: var(--poli-radius-xl);
+        box-shadow: var(--poli-shadow-sm);
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .course-section-header {
+        margin-bottom: 0.85rem;
+    }
+
+    .sectionname,
+    .sectionname a,
+    h3.sectionname {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--bs-emphasis-color);
+    }
+
+    // Activities become flat rows separated by hairline dividers (no nested cards).
+    .activity-item {
+        border: 0 !important;
+        border-radius: 0.85rem !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0.9rem 0.75rem;
+        border-top: 1px solid var(--poli-border) !important;
+        transition: background-color 0.15s ease;
+
+        &:first-of-type { border-top: 0 !important; }
+
+        &:hover {
+            background: var(--poli-surface-muted);
+        }
+    }
+
+    .activityiconcontainer {
+        width: 44px;
+        height: 44px;
+        border-radius: 0.7rem;
+        box-shadow: var(--poli-shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img { width: 24px; height: 24px; }
+    }
+
+    .activityname a,
+    .activityname .instancename {
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .activityname a:hover { color: var(--poli-primary); }
+
+    .activity-altcontent,
+    .activity-description,
+    .contentafterlink,
+    .description {
+        color: var(--poli-text-muted);
+    }
+
+    // Labels (text resources) — comfortable typography.
+    .modtype_label .contentwithoutlink,
+    .modtype_label .activity-altcontent {
+        color: var(--bs-body-color);
+    }
+}
+
+// Completion "Done" pill → emerald, rounded.
+.activity-item .badge.bg-success,
+.course-content .badge.bg-success,
+[data-action="toggle-manual-completion"].btn-success,
+.completion-dropdown .btn-success {
+    border-radius: 50rem !important;
+    font-weight: 600;
+}
+
+// =============================================================================
+// Global consistency — borders, radii, focus on every card-like surface.
+// =============================================================================
+.card,
+.block,
+.generaltable,
+.dashboard-card,
+[data-region="course-content"] .card {
+    border-color: var(--poli-border);
+}
+
+// Status badges keep brand semantics in both modes.
+.badge.bg-success { color: #fff; }
+.badge.bg-warning { color: #3a2a00; }
+
+// Activity completion bullet in the course index uses the brand success colour.
+.courseindex .courseindex-item .completioninfo.completion_complete,
+.courseindex .completioninfo[data-value="1"] {
+    color: var(--bs-success) !important;
+}
+
+// =============================================================================
+// Targeted fixes (v3): drawer toggle, course index states, completion, popover.
+// =============================================================================
+
+// Drawer toggle buttons (open course index / block drawer) → brand teal.
+.drawer-toggles .btn,
+.drawer-toggler .btn,
+[data-action="toggle"][data-target*="drawers"],
+[data-toggler="drawers"],
+.drawer-toggles .btn .icon,
+.drawer-toggler .btn .icon,
+[data-toggler="drawers"] .icon,
+[data-toggler="drawers"] i {
+    color: var(--poli-primary) !important;
+}
+
+.drawer-toggles .btn:hover,
+.drawer-toggler .btn:hover,
+[data-toggler="drawers"]:hover {
+    background: rgba(var(--poli-primary-rgb), 0.12) !important;
+    color: var(--poli-primary) !important;
+}
+
+// Course index — active item legible (white text on brand), hover subtle.
+.courseindex .courseindex-item.active,
+.courseindex .courseindex-item.active .courseindex-link,
+.courseindex .courseindex-link.active,
+.courseindex [aria-current="true"] {
+    background-color: var(--poli-primary) !important;
+    border-radius: 0.5rem;
+}
+
+.courseindex .courseindex-item.active,
+.courseindex .courseindex-item.active *,
+.courseindex .courseindex-link.active,
+.courseindex .courseindex-link.active *,
+.courseindex [aria-current="true"],
+.courseindex [aria-current="true"] * {
+    color: #fff !important;
+}
+
+.courseindex .courseindex-item:hover:not(.active) {
+    background-color: var(--poli-surface-muted) !important;
+}
+
+.courseindex .courseindex-item:hover:not(.active) .courseindex-link,
+.courseindex .courseindex-link:hover {
+    color: var(--bs-body-color) !important;
+}
+
+// Completion bullets: brand cyan comes from $success=teal (keeps Moodle's
+// original dot shape). Only force white inside the active (brand-filled) item.
+.courseindex .courseindex-item.active .completioninfo {
+    color: #fff !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+
+// Notifications / messages popover — readable text + brand actions.
+.popover-region {
+    .popover-region-content-container,
+    .popover-region-content,
+    .content-item-container {
+        color: var(--bs-body-color);
+    }
+
+    .notification-item__text,
+    .notification-item .title,
+    [data-region="notification-content-item-container"] {
+        color: var(--bs-body-color) !important;
+    }
+
+    .time,
+    .content-item-footer,
+    .notification-item__time,
+    small,
+    .text-muted {
+        color: var(--poli-text-muted) !important;
+    }
+
+    a,
+    .view-more,
+    [data-action="view-notification"],
+    .popover-region-header-actions a,
+    .popover-region-header-actions .btn,
+    .popover-region-seeall-text {
+        color: var(--poli-primary) !important;
+    }
+
+    .content-item-container:hover,
+    .notification-item:hover {
+        background: var(--poli-surface-muted) !important;
+    }
+
+    .popover-region-footer-container {
+        border-top: 1px solid var(--poli-border);
+    }
+}
+
+// =============================================================================
+// Login flow — no footer, fixed left panel, scrollable right (v4).
+// =============================================================================
+body.pagelayout-login #page.poli-login-page {
+    min-height: 100vh;
+}
+
+// Left column fills the full page height (gradient never leaves a white gap);
+// its inner content sticks so the panel stays in view while the right scrolls.
+body.pagelayout-login .login-layout-left {
+    position: static !important;
+    height: auto !important;
+    min-height: 100vh;
+    align-self: stretch;
+    padding: 0 !important;
+}
+
+body.pagelayout-login .login-layout-left .login-layout-left-content {
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 2rem;
+    margin: 0 auto;
+}
+
+body.pagelayout-login .login-layout-right {
+    min-height: 100vh;
+    display: flex;
+}
+
+// Password show/hide eye → brand colour, transparent (no native white button).
+.login-container .input-group .btn,
+.login-container .input-group button,
+.login-container [data-action="showpassword"],
+.login-container [data-action="hidepassword"],
+.login-container .toggle-sensitive,
+.pagelayout-login .input-group .btn {
+    background: transparent !important;
+    border-color: var(--poli-border) !important;
+    color: var(--poli-primary) !important;
+    box-shadow: none !important;
+
+    .icon,
+    i {
+        color: var(--poli-primary) !important;
+    }
+
+    &:hover {
+        background: rgba(var(--poli-primary-rgb), 0.08) !important;
+        color: var(--poli-primary) !important;
+    }
+}
+
+// "Log in as guest" + identity-provider buttons → outline, not native filled.
+#loginguestbtn,
+.login-identityprovider-btn,
+.login-container .btn-secondary {
+    background: transparent !important;
+    border: 1px solid var(--poli-border) !important;
+    color: var(--bs-body-color) !important;
+    font-weight: 600;
+    box-shadow: none !important;
+
+    &:hover {
+        border-color: var(--poli-primary) !important;
+        color: var(--poli-primary) !important;
+        background: rgba(var(--poli-primary-rgb), 0.08) !important;
+    }
+}
+
+// =============================================================================
+// All courses / category tree (course/index.php) — bring to home quality.
+// =============================================================================
+.poli-catpage {
+    .course_category_tree {
+        margin-top: 0.5rem;
+    }
+
+    // Category headings act as section titles.
+    .category > .info .categoryname,
+    .categoryname {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--bs-emphasis-color);
+        padding: 0.35rem 0;
+    }
+
+    // Top-level category = larger heading with breathing room.
+    > .course_category_tree > .category > .info .categoryname,
+    .category.category-listing > .info .categoryname {
+        font-size: 1.35rem;
+    }
+
+    .category {
+        border: 0;
+        margin-bottom: 1.25rem;
+    }
+
+    .category > .info {
+        border: 0;
+        background: transparent;
+    }
+
+    // Collapse / expand chevrons in the brand colour.
+    .category > .info .categoryname::before,
+    .collapseexpand,
+    .tree_item.collapsed,
+    .content .controls a {
+        color: var(--poli-primary);
+    }
+
+    // Course cards inside the tree (name + info, no image): make them feel
+    // intentional even without a thumbnail.
+    .coursebox {
+        min-height: 88px;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--poli-gradient);
+            opacity: 0;
+            transition: opacity 0.18s ease;
+        }
+
+        &:hover::before { opacity: 1; }
+
+        .coursename {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        // Info ("i") icon and any inline actions → brand teal.
+        .info .icon,
+        .coursename + .moreinfo,
+        a.coursesummarylink,
+        .summary a {
+            color: var(--poli-primary) !important;
+        }
+    }
+
+    // "Expand all / Collapse all" toggle.
+    .collapsible-actions a,
+    .collapseexpand {
+        font-weight: 600;
+        color: var(--poli-primary) !important;
+    }
+}
+
+// =============================================================================
+// Admin / management listings (course management, search results).
+// =============================================================================
+.course-listing,
+.management-course-listing,
+.course-category-listings {
+    .listitem {
+        border-radius: 0.85rem;
+        border: 1px solid var(--poli-border);
+        margin-bottom: 0.5rem;
+        padding: 0.35rem 0.5rem;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+
+        &:hover {
+            background: var(--poli-surface-muted);
+            border-color: rgba(var(--poli-primary-rgb), 0.4);
+        }
+    }
+
+    .listitem .courseactions .action-icon,
+    .listitem .commands a {
+        color: var(--poli-primary);
+    }
+
+    // Course name link must stay visible on hover AND on the selected row
+    // (was vanishing — same colour as the highlight background).
+    .listitem .coursename,
+    .listitem a.coursename,
+    .listitem .name a,
+    .listitem .ba-actions a.coursename,
+    .listitem.selected .coursename {
+        color: var(--bs-body-color) !important;
+        opacity: 1 !important;
+    }
+
+    .listitem .coursename:hover,
+    .listitem a.coursename:hover {
+        color: var(--poli-primary) !important;
+    }
+
+    // Selected row highlight uses a subtle brand tint, keeping text readable.
+    .listitem.selected {
+        background: rgba(var(--poli-primary-rgb), 0.10) !important;
+        border-color: rgba(var(--poli-primary-rgb), 0.5) !important;
+    }
+}
+
+// All-courses view: hide the bare core category tree (poli sections replace it),
+// but keep it in the DOM (Moodle requires the main content placeholder).
+body.pagelayout-coursecategory.poli-allcourses .poli-core-listing {
+    display: none;
+}
+
+// Inside the all-courses poli-container the section partials don't need to
+// re-pad (avoid double container gutters).
+body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
+    padding-inline: 0;
+    max-width: 100%;
+}
+
+// =============================================================================
+// Forum + activity information / details (v5).
+// =============================================================================
+
+// Activity intro/details box ("General news and announcements") → branded card.
+.activity-details,
+[data-region="activity-information"],
+.activity-information {
+    border-radius: var(--poli-radius-xl);
+    border: 1px solid var(--poli-border);
+    background: var(--poli-surface);
+    box-shadow: var(--poli-shadow-sm);
+}
+
+[data-bs-theme="dark"] {
+    .activity-details,
+    [data-region="activity-information"],
+    .activity-information,
+    .activity-description,
+    .forumheaderlist,
+    .forumpost,
+    .discussion-list,
+    table.table.discussion-list,
+    .forumsearch .form-control {
+        background-color: var(--poli-surface) !important;
+        color: var(--bs-body-color);
+    }
+}
+
+// Search submit buttons (forum search, etc.) → brand teal, like other searches.
+.btn.btn-submit.search-icon,
+.search-input-wrapper .btn-submit,
+.simplesearchform .btn {
+    background: var(--poli-primary) !important;
+    border-color: var(--poli-primary) !important;
+    color: #fff !important;
+
+    &:hover {
+        background: #{darken($poli-brand-primary, 6%)} !important;
+        color: #fff !important;
+    }
+}
+
+// Forum discussion list → clean rows + brand links.
+.path-mod-forum {
+    .discussion-list a,
+    .forumpost .author a,
+    .topic a {
+        color: var(--bs-body-color);
+    }
+
+    .discussion-list a:hover { color: var(--poli-primary); }
+
+    .forumpost {
+        border-radius: var(--poli-radius-xl);
+        border: 1px solid var(--poli-border);
+        box-shadow: var(--poli-shadow-sm);
+        overflow: hidden;
+    }
+
+    .forumpost .header {
+        background: var(--poli-surface-muted);
+    }
+
+    // Pinned / starred badges keep brand.
+    .badge { border-radius: 50rem; }
+}
+
+// Alerts: keep readable, brand-tinted (info=teal already via palette).
+.alert {
+    border-radius: var(--poli-radius-lg);
+    border-width: 1px;
+}
+
+// =============================================================================
+// Edit forms (modedit, course settings) — dark mode fixes (v6).
+// =============================================================================
+
+// Secondary buttons (Cancel, etc.) adapt in dark instead of staying light grey.
+[data-bs-theme="dark"] .btn-secondary {
+    --bs-btn-bg: var(--poli-surface-muted);
+    --bs-btn-border-color: var(--poli-border);
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-hover-bg: var(--poli-surface);
+    --bs-btn-hover-color: var(--bs-body-color);
+    --bs-btn-hover-border-color: rgba(var(--poli-primary-rgb), 0.5);
+    --bs-btn-active-bg: var(--poli-surface);
+    --bs-btn-active-color: var(--bs-body-color);
+}
+
+// mform collapsible section toggle "bullet" circle → brand tint (was light teal).
+[data-bs-theme="dark"] {
+    .icons-collapse-expand,
+    .btn-icon.fheader,
+    .collapseexpand .icon {
+        background-color: rgba(var(--poli-primary-rgb), 0.18) !important;
+        color: var(--poli-primary) !important;
+    }
+}
+
+// TinyMCE — dark chrome (toolbar, menubar, statusbar, edit area).
+[data-bs-theme="dark"] {
+    .tox.tox-tinymce {
+        border-color: var(--poli-border) !important;
+    }
+
+    .tox .tox-editor-header,
+    .tox .tox-menubar,
+    .tox .tox-toolbar-overlord,
+    .tox .tox-toolbar,
+    .tox .tox-toolbar__primary,
+    .tox .tox-toolbar__overflow,
+    .tox .tox-statusbar,
+    .tox .tox-sidebar,
+    .tox-edit-area,
+    .tox .tox-edit-area__iframe {
+        background-color: var(--poli-surface) !important;
+    }
+
+    .tox .tox-tbtn,
+    .tox .tox-mbtn,
+    .tox .tox-tbtn__select-label,
+    .tox .tox-statusbar,
+    .tox .tox-statusbar a,
+    .tox .tox-statusbar__path-item {
+        color: var(--bs-body-color) !important;
+    }
+
+    .tox .tox-tbtn svg,
+    .tox .tox-mbtn svg {
+        fill: var(--bs-body-color) !important;
+    }
+
+    .tox .tox-tbtn:hover,
+    .tox .tox-mbtn:hover,
+    .tox .tox-tbtn--enabled {
+        background: var(--poli-surface-muted) !important;
+    }
+
+    .tox:not(.tox-tinymce-inline) .tox-editor-header {
+        border-bottom: 1px solid var(--poli-border) !important;
+        box-shadow: none !important;
+    }
+
+    .tox .tox-statusbar {
+        border-top: 1px solid var(--poli-border) !important;
+        color: var(--poli-text-muted) !important;
+    }
+
+    .tox .tox-mbtn__select-label,
+    .tox .tox-tbtn__select-label {
+        color: var(--bs-body-color) !important;
+    }
+
+    // Hide the "Build with TinyMCE" promo/branding for a cleaner editor.
+    .tox .tox-promotion,
+    .tox .tox-statusbar__branding { display: none !important; }
+}
+
+// Respect reduced motion.
+@media (prefers-reduced-motion: reduce) {
+    .btn,
+    .poli-category-card,
+    .poli-course-card,
+    .poli-course-media img,
+    .poli-theme-toggle,
+    .poli-catpage .coursebox,
+    .poli-stat,
+    .course-content .activity-item,
+    .block_myoverview .card,
+    .navbar .primary-navigation .nav-link::after {
+        transition: none !important;
+    }
+}

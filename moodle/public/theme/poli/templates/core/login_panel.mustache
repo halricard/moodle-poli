@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core/login_panel
+
+    Poli branded left panel for the split login layout.
+}}
+<div class="login-layout-left-content poli-login-panel">
+    {{^leftinstructions}}
+        <span class="poli-login-eyebrow">{{ sitename }}</span>
+        <h1 class="poli-login-title">{{#str}} loginpaneltitle, theme_poli {{/str}}</h1>
+        <p class="poli-login-lead">{{#str}} loginpanellead, theme_poli {{/str}}</p>
+
+        <ul class="poli-login-features">
+            <li><i class="fa fa-circle-check" aria-hidden="true"></i> {{#str}} loginfeature1, theme_poli {{/str}}</li>
+            <li><i class="fa fa-circle-check" aria-hidden="true"></i> {{#str}} loginfeature2, theme_poli {{/str}}</li>
+            <li><i class="fa fa-circle-check" aria-hidden="true"></i> {{#str}} loginfeature3, theme_poli {{/str}}</li>
+        </ul>
+
+        <div class="poli-login-tiles" aria-hidden="true">
+            <span class="poli-login-tile"><i class="fa fa-graduation-cap"></i></span>
+            <span class="poli-login-tile"><i class="fa fa-flask"></i></span>
+            <span class="poli-login-tile"><i class="fa fa-book-open"></i></span>
+            <span class="poli-login-tile"><i class="fa fa-language"></i></span>
+        </div>
+    {{/leftinstructions}}
+    {{#leftinstructions}}
+        <span class="poli-login-eyebrow">{{ sitename }}</span>
+        <div class="mx-auto text-start">
+            {{{ leftinstructions }}}
+        </div>
+    {{/leftinstructions}}
+</div>

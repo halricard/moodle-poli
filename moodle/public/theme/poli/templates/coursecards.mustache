@@ -1,0 +1,80 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_poli/coursecards
+
+    Front page featured course card grid.
+}}
+<section class="poli-section pt-0">
+    <div class="poli-container">
+        <div class="poli-section-head d-flex flex-wrap justify-content-between align-items-end gap-2">
+            <div>
+                <span class="poli-eyebrow"><i class="fa fa-star" aria-hidden="true"></i> {{#str}} coursessubtitle, theme_poli {{/str}}</span>
+                <h2>{{#str}} coursestitle, theme_poli {{/str}}</h2>
+            </div>
+            <a href="{{ allcoursesurl }}" class="btn btn-outline-secondary rounded-pill">
+                {{#str}} viewallcourses, theme_poli {{/str}}
+                <i class="fa fa-arrow-right ms-1" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        {{#hascourses}}
+            <div class="poli-course-grid">
+                {{#courses}}
+                    <article class="poli-course-card"
+                             style="--poli-card-start: {{ accentstart }}; --poli-card-end: {{ accentend }};">
+                        <div class="poli-course-media">
+                            {{#hasimage}}
+                                <img src="{{ imageurl }}" alt="" loading="lazy">
+                            {{/hasimage}}
+                            {{^hasimage}}
+                                <span class="poli-course-initials">{{ initials }}</span>
+                            {{/hasimage}}
+                            {{#categoryname}}
+                                <span class="poli-course-chip">{{ categoryname }}</span>
+                            {{/categoryname}}
+                            {{#enrolled}}
+                                <span class="poli-course-badge-enrolled">
+                                    <i class="fa fa-check" aria-hidden="true"></i> {{#str}} enrolled, theme_poli {{/str}}
+                                </span>
+                            {{/enrolled}}
+                        </div>
+                        <div class="poli-course-body">
+                            <h3 class="poli-course-title"><a href="{{ url }}">{{ fullname }}</a></h3>
+                            {{#summary}}
+                                <p class="poli-course-summary">{{ summary }}</p>
+                            {{/summary}}
+                            <div class="poli-course-footer">
+                                <span class="poli-course-cta">
+                                    {{#enrolled}}{{#str}} continuelearning, theme_poli {{/str}}{{/enrolled}}
+                                    {{^enrolled}}{{#str}} viewcourse, theme_poli {{/str}}{{/enrolled}}
+                                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                {{/courses}}
+            </div>
+        {{/hascourses}}
+        {{^hascourses}}
+            <div class="poli-empty">
+                <i class="fa fa-graduation-cap fa-2x mb-2 d-block" aria-hidden="true"></i>
+                {{#str}} nocourses, theme_poli {{/str}}
+            </div>
+        {{/hascourses}}
+    </div>
+</section>

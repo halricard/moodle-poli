@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_poli/coursehero
+
+    Course presentation hero shown above the course content.
+}}
+<section class="poli-course-hero" style="--poli-card-start: {{ accentstart }}; --poli-card-end: {{ accentend }};">
+    {{#hasimage}}
+        <span class="poli-course-hero-bg" style="background-image: url('{{ imageurl }}');"></span>
+        <span class="poli-course-hero-scrim"></span>
+    {{/hasimage}}
+
+    {{#categoryname}}
+        <a class="poli-course-hero-cat" href="{{ categoryurl }}">
+            <i class="fa fa-folder-open" aria-hidden="true"></i> {{ categoryname }}
+        </a>
+    {{/categoryname}}
+
+    <h1>{{ fullname }}</h1>
+
+    {{#summary}}
+        <p class="poli-course-hero-summary">{{ summary }}</p>
+    {{/summary}}
+
+    <div class="poli-course-hero-meta">
+        {{#hasteachers}}
+            <div class="d-flex align-items-center gap-2">
+                <div class="poli-teachers">
+                    {{#teachers}}
+                        <img src="{{ picture }}" alt="{{ name }}" title="{{ name }}">
+                    {{/teachers}}
+                </div>
+                <span class="poli-teachers-label">
+                    {{#str}} taughtby, theme_poli {{/str}}
+                    {{#teachers}}<strong>{{ name }}</strong> {{/teachers}}
+                </span>
+            </div>
+        {{/hasteachers}}
+
+        {{#hasprogress}}
+            <div class="poli-course-progress">
+                <div class="poli-progress-head">
+                    <span>{{#str}} courseprogress, theme_poli {{/str}}</span>
+                    <span>{{ progress }}%</span>
+                </div>
+                <div class="progress" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar" style="width: {{ progress }}%;"></div>
+                </div>
+            </div>
+        {{/hasprogress}}
+
+        <a href="#poli-course-content" class="btn btn-poli-ghost ms-auto">
+            {{#isenrolled}}{{#str}} continuelearning, theme_poli {{/str}}{{/isenrolled}}
+            {{^isenrolled}}{{#str}} accesscourse, theme_poli {{/str}}{{/isenrolled}}
+            <i class="fa fa-arrow-down ms-2" aria-hidden="true"></i>
+        </a>
+    </div>
+</section>

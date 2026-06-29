@@ -1,0 +1,34 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_poli/categorybanner
+
+    Brand banner shown atop the course category / listing pages.
+}}
+<section class="poli-cat-banner" style="--poli-card-start: {{ accentstart }}; --poli-card-end: {{ accentend }};">
+    <div class="poli-cat-banner-body">
+        <h1>{{ title }}</h1>
+        {{#description}}
+            <p class="poli-cat-banner-desc">{{ description }}</p>
+        {{/description}}
+        {{#coursecountlabel}}
+            <span class="poli-cat-banner-count">
+                <i class="fa fa-layer-group" aria-hidden="true"></i> {{ coursecountlabel }}
+            </span>
+        {{/coursecountlabel}}
+    </div>
+</section>

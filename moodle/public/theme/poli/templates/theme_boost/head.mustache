@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_boost/head
+
+    Poli override of the page head. Applies the saved colour scheme before the
+    first paint to avoid a flash of the wrong theme (FOUC), then renders the
+    standard Moodle head content.
+}}
+{{{ output.doctype }}}
+<html {{{ output.htmlattributes }}}>
+<head>
+    <script>
+    //<![CDATA[
+    (function() {
+        var root = document.documentElement;
+        // 1. Apply the saved colour scheme before first paint (avoids FOUC).
+        try {
+            var scheme = localStorage.getItem('poli-color-scheme');
+            if (scheme !== 'light' && scheme !== 'dark') {
+                scheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    ? 'dark' : 'light';
+            }
+            root.setAttribute('data-bs-theme', scheme);
+        } catch (e) {
+            root.setAttribute('data-bs-theme', 'light');
+        }
+
+        // 2. Delegated toggle: any [data-poli-toggle] element flips the scheme.
+        var syncToggles = function() {
+            var dark = root.getAttribute('data-bs-theme') === 'dark';
+            document.querySelectorAll('[data-poli-toggle]').forEach(function(el) {
+                el.setAttribute('aria-pressed', dark ? 'true' : 'false');
+            });
+        };
+        document.addEventListener('click', function(e) {
+            var toggle = e.target.closest('[data-poli-toggle]');
+            if (!toggle) {
+                return;
+            }
+            e.preventDefault();
+            var next = root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-bs-theme', next);
+            try {
+                localStorage.setItem('poli-color-scheme', next);
+            } catch (err) {
+                // Storage unavailable; choice will not persist.
+            }
+            syncToggles();
+        });
+        document.addEventListener('DOMContentLoaded', syncToggles);
+    })();
+    //]]>
+    </script>
+    <title>{{{ output.page_title }}}</title>
+    <link rel="shortcut icon" href="{{{ output.favicon }}}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap">
+
+    {{{ output.standard_head_html }}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
