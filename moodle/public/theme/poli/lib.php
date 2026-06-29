@@ -197,9 +197,9 @@ function theme_poli_navbar_style_css($theme): string {
     $colourkey = $theme->settings->navbarcolor ?? 'primary';
 
     $colours = [
-        'primary' => $theme->settings->brandcolor ?: '#00AEC7',
-        'accent' => $theme->settings->brandaccent ?: '#E6007E',
-        'tertiary' => $theme->settings->brandtertiary ?: '#FFC400',
+        'primary' => $theme->settings->brandcolor ?: '#1FB4C3',
+        'accent' => $theme->settings->brandaccent ?: '#EE2252',
+        'tertiary' => $theme->settings->brandtertiary ?: '#FAA41F',
     ];
     $c = $colours[$colourkey] ?? $colours['primary'];
     // Full palette gradient (teal → magenta → amber) for the accent line / fill.
@@ -369,13 +369,15 @@ function theme_poli_core_admin_logo_url(string $filearea): string {
  * @return array list of [name, start hex, end hex] gradient stops.
  */
 function theme_poli_accent_palette(): array {
+    // Brand-only: the three logo colours plus blends between them. No off-brand
+    // hues — every card/tile stays within the Poliedro palette.
     return [
-        ['teal',    '#00AEC7', '#0093A8'],
-        ['magenta', '#E6007E', '#B80064'],
-        ['amber',   '#FFC400', '#F59E0B'],
-        ['violet',  '#7C3AED', '#5B21B6'],
-        ['emerald', '#10B981', '#059669'],
-        ['rose',    '#FB7185', '#E11D48'],
+        ['teal',          '#1FB4C3', '#1796A3'],
+        ['magenta',       '#EE2252', '#C71845'],
+        ['amber',         '#FAA41F', '#E08A12'],
+        ['teal-magenta',  '#1FB4C3', '#EE2252'],
+        ['magenta-amber', '#EE2252', '#FAA41F'],
+        ['amber-teal',    '#FAA41F', '#1FB4C3'],
     ];
 }
 
