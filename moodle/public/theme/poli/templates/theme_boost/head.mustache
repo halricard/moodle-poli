@@ -17,9 +17,8 @@
 {{!
     @template theme_boost/head
 
-    Poli override of the page head. Applies the saved colour scheme before the
-    first paint to avoid a flash of the wrong theme (FOUC), then renders the
-    standard Moodle head content.
+    Poli override of the page head. Forces the dark colour scheme before the
+    first paint, then renders the standard Moodle head content.
 }}
 {{{ output.doctype }}}
 <html {{{ output.htmlattributes }}}>
@@ -28,46 +27,20 @@
     //<![CDATA[
     (function() {
         var root = document.documentElement;
-        // 1. Apply the saved colour scheme before first paint (avoids FOUC).
+        // Apply dark before first paint to avoid Bootstrap's light defaults.
+        root.setAttribute('data-bs-theme', 'dark');
+        root.style.colorScheme = 'dark';
         try {
-            var scheme = localStorage.getItem('poli-color-scheme');
-            if (scheme !== 'light' && scheme !== 'dark') {
-                scheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                    ? 'dark' : 'light';
-            }
-            root.setAttribute('data-bs-theme', scheme);
+            localStorage.removeItem('poli-color-scheme');
         } catch (e) {
-            root.setAttribute('data-bs-theme', 'light');
+            // Storage unavailable; dark is already applied.
         }
-
-        // 2. Delegated toggle: any [data-poli-toggle] element flips the scheme.
-        var syncToggles = function() {
-            var dark = root.getAttribute('data-bs-theme') === 'dark';
-            document.querySelectorAll('[data-poli-toggle]').forEach(function(el) {
-                el.setAttribute('aria-pressed', dark ? 'true' : 'false');
-            });
-        };
-        document.addEventListener('click', function(e) {
-            var toggle = e.target.closest('[data-poli-toggle]');
-            if (!toggle) {
-                return;
-            }
-            e.preventDefault();
-            var next = root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-            root.setAttribute('data-bs-theme', next);
-            try {
-                localStorage.setItem('poli-color-scheme', next);
-            } catch (err) {
-                // Storage unavailable; choice will not persist.
-            }
-            syncToggles();
-        });
-        document.addEventListener('DOMContentLoaded', syncToggles);
     })();
     //]]>
     </script>
     <title>{{{ output.page_title }}}</title>
     <link rel="shortcut icon" href="{{{ output.favicon }}}" />
+    <meta name="color-scheme" content="dark">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"

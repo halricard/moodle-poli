@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Poli';
-$string['choosereadme'] = 'Poli é um tema filho do Boost, moderno e refinado, criado para a experiência de aprendizagem do Poliedro. Oferece uma home do aluno com banner hero, explorador de categorias e cards de cursos com imagens, uma página de apresentação de curso elegante e suporte completo a modo claro/escuro — mantendo a área administrativa no Boost nativo.';
+$string['choosereadme'] = 'Poli é um tema filho do Boost, moderno e refinado, criado para a experiência de aprendizagem do Poliedro. Oferece uma home do aluno com banner hero, explorador de categorias, cards de cursos com imagens e uma página de apresentação de curso elegante, tudo em uma experiência dark premium.';
 $string['configtitle'] = 'Configurações do Poli';
 
 // Setting pages.
@@ -61,11 +61,9 @@ $string['palette_primary'] = 'Primária (azul-petróleo)';
 $string['palette_accent'] = 'Destaque (magenta)';
 $string['palette_tertiary'] = 'Terciária (âmbar)';
 
-// Logos.
-$string['logolight'] = 'Logo (modo claro)';
-$string['logolight_desc'] = 'Logo exibido na barra de navegação no tema claro. Use um logo com texto/cores escuras, legível sobre fundo claro.';
-$string['logodark'] = 'Logo (modo escuro)';
-$string['logodark_desc'] = 'Logo exibido na barra de navegação no tema escuro. Use um logo com texto claro/branco, legível sobre fundo escuro. Se apenas um logo for enviado, ele é usado nos dois modos.';
+// Logo.
+$string['logodark'] = 'Logo do tema';
+$string['logodark_desc'] = 'Logo exibido na barra de navegação dark-only. Use um logo com texto claro/branco, legível sobre fundo escuro.';
 
 // Images.
 $string['backgroundimage'] = 'Imagem de fundo';
@@ -119,11 +117,6 @@ $string['continuelearning'] = 'Continuar estudando';
 $string['accesscourse'] = 'Acessar curso';
 $string['courseprogress'] = 'Seu progresso';
 $string['taughtby'] = 'Com';
-
-// Colour scheme toggle.
-$string['togglecolorscheme'] = 'Alternar modo claro/escuro';
-$string['lightmode'] = 'Modo claro';
-$string['darkmode'] = 'Modo escuro';
 
 // Login panel.
 $string['loginpaneltitle'] = 'Sua jornada de conhecimento começa aqui';

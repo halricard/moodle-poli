@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Poli';
-$string['choosereadme'] = 'Poli is a modern, polished child theme of Boost for the Poliedro learning experience. It delivers a curated student home with a hero banner, category explorer and rich course cards, a beautiful course presentation page, and full light/dark mode support — while leaving the administration area on native Boost.';
+$string['choosereadme'] = 'Poli is a modern, polished child theme of Boost for the Poliedro learning experience. It delivers a curated student home with a hero banner, category explorer, rich course cards and a beautiful course presentation page in a premium dark-only experience.';
 $string['configtitle'] = 'Poli settings';
 
 // Setting pages.
@@ -61,11 +61,9 @@ $string['palette_primary'] = 'Primary (teal)';
 $string['palette_accent'] = 'Accent (magenta)';
 $string['palette_tertiary'] = 'Tertiary (amber)';
 
-// Logos.
-$string['logolight'] = 'Logo (light mode)';
-$string['logolight_desc'] = 'Logo shown in the navbar when the light colour scheme is active. Use a logo with dark text/colours that reads well on a light background.';
-$string['logodark'] = 'Logo (dark mode)';
-$string['logodark_desc'] = 'Logo shown in the navbar when the dark colour scheme is active. Use a logo with light/white text that reads well on a dark background. If only one logo is uploaded it is used for both modes.';
+// Logo.
+$string['logodark'] = 'Theme logo';
+$string['logodark_desc'] = 'Logo shown in the dark-only navbar. Use a logo with light/white text that reads well on a dark background.';
 
 // Images.
 $string['backgroundimage'] = 'Background image';
@@ -119,11 +117,6 @@ $string['continuelearning'] = 'Continue learning';
 $string['accesscourse'] = 'Access course';
 $string['courseprogress'] = 'Your progress';
 $string['taughtby'] = 'Taught by';
-
-// Colour scheme toggle.
-$string['togglecolorscheme'] = 'Toggle light/dark mode';
-$string['lightmode'] = 'Light mode';
-$string['darkmode'] = 'Dark mode';
 
 // Login panel.
 $string['loginpaneltitle'] = 'Your journey of knowledge starts here';

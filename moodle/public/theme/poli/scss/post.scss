@@ -1,9 +1,9 @@
 // =============================================================================
-// Poli theme — post SCSS (components, polish, light/dark).
+// Poli theme — post SCSS (components, polish, dark-only).
 // Injected AFTER the full Bootstrap + Moodle preset chain, so all Bootstrap
 // variables, functions and mixins are available here.
-// Theme-adaptive values are driven by CSS custom properties so the same markup
-// responds to [data-bs-theme="light"|"dark"] without duplicated rules.
+// Dark values live in :root so Moodle/Boost components inherit the same palette
+// even before their more specific dark-mode selectors run.
 // =============================================================================
 
 // Fonts (Inter + Poppins) are loaded via <link> in head.mustache — scssphp
@@ -18,25 +18,9 @@
     --poli-accent: #{$poli-brand-accent};
     --poli-accent-rgb: #{red($poli-brand-accent)}, #{green($poli-brand-accent)}, #{blue($poli-brand-accent)};
     --poli-tertiary: #{$poli-brand-tertiary};
+    --poli-tertiary-rgb: #{red($poli-brand-tertiary)}, #{green($poli-brand-tertiary)}, #{blue($poli-brand-tertiary)};
 
     --poli-gradient: linear-gradient(120deg, #{$poli-brand-primary} 0%, #{mix($poli-brand-primary, $poli-brand-accent, 55%)} 48%, #{$poli-brand-accent} 100%);
-    --poli-gradient-soft: linear-gradient(120deg, #{rgba($poli-brand-primary, 0.10)} 0%, #{rgba($poli-brand-accent, 0.05)} 100%);
-
-    // Surfaces (light).
-    --poli-surface: #ffffff;
-    --poli-surface-muted: #f4f7fb;
-    --poli-border: #{rgba(#1e2030, 0.08)};
-    --poli-text-muted: #5b6478;
-
-    --poli-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
-    --poli-shadow: 0 6px 16px -6px rgba(16, 24, 40, 0.12), 0 12px 28px -12px rgba(16, 24, 40, 0.14);
-    --poli-shadow-lg: 0 18px 40px -12px rgba(16, 24, 40, 0.22);
-
-    --poli-navbar-bg: #{rgba(#ffffff, 0.82)};
-    --poli-radius-xl: 1.25rem;
-}
-
-[data-bs-theme="dark"] {
     // Cohesive Poli dark palette.
     --poli-surface: #181b24;
     --poli-surface-muted: #11131a;
@@ -50,6 +34,7 @@
     --poli-shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.6);
 
     --poli-navbar-bg: #{rgba(#11131a, 0.82)};
+    --poli-radius-xl: 1.25rem;
 
     // Drive ALL Bootstrap/Moodle components from one consistent dark scale.
     --bs-body-bg: #0e0f14;
@@ -69,6 +54,7 @@
     --bs-card-bg: #181b24;
     --bs-card-cap-bg: #1c2029;
     --bs-heading-color: #f4f5f8;
+    color-scheme: dark;
 }
 
 // -----------------------------------------------------------------------------
@@ -258,35 +244,6 @@ body.pagelayout-coursecategory .poli-catpage {
 .navbar .navbar-brand img.logo {
     max-height: 34px;
     width: auto;
-}
-
-// Light/dark toggle.
-.poli-theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 1px solid var(--poli-border);
-    background: transparent;
-    color: var(--bs-body-color);
-    align-self: center;
-    transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
-
-    &:hover {
-        background: var(--poli-surface-muted);
-        color: var(--poli-primary);
-        transform: rotate(-15deg);
-    }
-
-    .poli-icon-light { display: none; }
-    .poli-icon-dark { display: inline-block; }
-}
-
-[data-bs-theme="dark"] .poli-theme-toggle {
-    .poli-icon-light { display: inline-block; }
-    .poli-icon-dark { display: none; }
 }
 
 // -----------------------------------------------------------------------------
@@ -924,18 +881,6 @@ body.pagelayout-login #page .login-container {
     }
 }
 
-// Floating colour-scheme toggle on login pages.
-.poli-login-toggle {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1030;
-    width: 42px;
-    height: 42px;
-    background: var(--poli-surface);
-    box-shadow: var(--poli-shadow-sm);
-}
-
 // Vertically centre the form column + premium spacing.
 body.pagelayout-login .login-layout-right .login-layout-right-content {
     display: flex;
@@ -1269,63 +1214,60 @@ a:focus-visible,
 }
 
 // =============================================================================
-// Dark-mode fixes for Moodle/Boost surfaces that use literal light colours
-// (these do not respond to data-bs-theme on their own).
+// Fix Moodle/Boost surfaces that use literal light colours.
 // =============================================================================
-[data-bs-theme="dark"] {
-    #page.drawers .main-inner,
-    #region-main {
-        background-color: var(--poli-surface) !important;
-    }
+#page.drawers .main-inner,
+#region-main {
+    background-color: var(--poli-surface) !important;
+}
 
-    // Footer, drawers and other hard-coded white panels.
-    #page-footer.footer-popover,
-    .footer-content-popover,
-    .drawer,
-    .list-group-item,
-    .dropdown-menu,
-    .modal-content,
-    .popover {
-        background-color: var(--poli-surface) !important;
-        color: var(--bs-body-color);
-    }
+// Footer, drawers and other hard-coded white panels.
+#page-footer.footer-popover,
+.footer-content-popover,
+.drawer,
+.list-group-item,
+.dropdown-menu,
+.modal-content,
+.popover {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color);
+}
 
-    .bg-white { background-color: var(--poli-surface) !important; }
+.bg-white { background-color: var(--poli-surface) !important; }
 
-    // Activity / completion "Done" pills and white badges.
-    .badge.bg-light,
-    .course-content .activity-item {
-        color: var(--bs-body-color);
-    }
+// Activity / completion "Done" pills and white badges.
+.badge.bg-light,
+.course-content .activity-item {
+    color: var(--bs-body-color);
+}
 
-    // Course index drawer.
-    [data-region="courseindex"],
-    .courseindex {
-        background-color: var(--poli-surface);
-    }
+// Course index drawer.
+[data-region="courseindex"],
+.courseindex {
+    background-color: var(--poli-surface);
+}
 
-    // Section / activity headings that rely on a light surface for contrast.
-    .course-content .sectionname,
-    .course-content .course-section-header .sectionname,
-    .course-content h3,
-    #region-main h2,
-    #region-main h3 {
-        color: var(--bs-heading-color);
-    }
+// Section / activity headings that rely on a light surface for contrast.
+.course-content .sectionname,
+.course-content .course-section-header .sectionname,
+.course-content h3,
+#region-main h2,
+#region-main h3 {
+    color: var(--bs-heading-color);
+}
 
-    // Inputs / selects keep a readable dark field.
-    .form-control,
-    .form-select,
-    .custom-select {
-        background-color: var(--poli-surface-muted);
-        border-color: var(--poli-border);
-        color: var(--bs-body-color);
-    }
+// Inputs / selects keep a readable dark field.
+.form-control,
+.form-select,
+.custom-select {
+    background-color: var(--poli-surface-muted);
+    border-color: var(--poli-border);
+    color: var(--bs-body-color);
+}
 
-    // Subtle elevation border on the main content surface.
-    #page.drawers .main-inner {
-        border: 1px solid var(--poli-border);
-    }
+// Subtle elevation border on the main content surface.
+#page.drawers .main-inner {
+    border: 1px solid var(--poli-border);
 }
 
 // =============================================================================
@@ -1393,10 +1335,9 @@ a:focus-visible,
         }
     }
 
-    // Icon buttons (notifications, messages, toggle) share one footprint.
+    // Icon buttons (notifications, messages) share one footprint.
     .nav-link.icon-no-margin,
-    #usernavigation .btn,
-    .poli-theme-toggle {
+    #usernavigation .btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -1412,6 +1353,133 @@ a:focus-visible,
         width: 30px;
         height: 30px;
         box-shadow: 0 0 0 2px var(--poli-border);
+    }
+}
+
+// Navbar right rail: edit switch, alerts, messages and avatar.
+.navbar.fixed-top #usernavigation {
+    align-items: center;
+    gap: 0.35rem;
+
+    .divider.border-start {
+        display: none;
+    }
+
+    .editmode-switch-form {
+        height: 40px;
+        margin-inline-start: 0 !important;
+        padding: 0 0.75rem;
+        border: 1px solid var(--poli-border);
+        border-radius: 50rem;
+        background: rgba(#fff, 0.045);
+
+        .input-group {
+            align-items: center;
+            gap: 0.45rem;
+            flex-wrap: nowrap;
+        }
+
+        .form-check-label {
+            color: var(--bs-body-color);
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .form-switch {
+            min-height: 0;
+            padding-left: 2.25rem;
+        }
+
+        .form-check-input {
+            width: 2.1rem;
+            height: 1.1rem;
+            margin-top: 0;
+            cursor: pointer;
+            background-color: rgba(#fff, 0.1);
+            border-color: rgba(#fff, 0.24);
+            box-shadow: inset 0 0 0 1px rgba(#000, 0.18);
+
+            &:checked {
+                background-color: var(--poli-primary);
+                border-color: var(--poli-primary);
+                box-shadow: 0 0 0 0.18rem rgba(var(--poli-primary-rgb), 0.18);
+            }
+        }
+    }
+
+    .popover-region {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .popover-region-toggle,
+    .nav-link.icon-no-margin,
+    .btn-icon {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        padding: 0 !important;
+        border-radius: 50%;
+        color: var(--poli-text-muted);
+        background: transparent;
+        transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+
+        .icon,
+        i {
+            margin: 0;
+            color: currentColor;
+        }
+
+        &:hover,
+        &:focus-visible {
+            color: var(--poli-primary);
+            background: rgba(var(--poli-primary-rgb), 0.12);
+            transform: translateY(-1px);
+        }
+    }
+
+    .popover-region .count-container {
+        top: 0.15rem;
+        right: 0.05rem;
+        min-width: 1.05rem;
+        height: 1.05rem;
+        padding: 0 0.28rem;
+        border-radius: 50rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        line-height: 1;
+        background: var(--poli-accent) !important;
+        color: #fff !important;
+        box-shadow: 0 0 0 2px var(--poli-navbar-bg);
+    }
+
+    .usermenu-container {
+        margin-left: 0.2rem;
+    }
+
+    .usermenu .dropdown-toggle {
+        min-height: 42px;
+        padding: 0.2rem 0.45rem;
+        border: 1px solid var(--poli-border);
+        border-radius: 50rem;
+        background: rgba(#fff, 0.045);
+
+        &:hover,
+        &:focus-visible {
+            background: rgba(var(--poli-primary-rgb), 0.1);
+            border-color: rgba(var(--poli-primary-rgb), 0.4);
+        }
+    }
+
+    .usermenu .userpicture {
+        width: 34px;
+        height: 34px;
+        box-shadow:
+            0 0 0 2px var(--poli-surface),
+            0 0 0 4px rgba(var(--poli-primary-rgb), 0.45);
     }
 }
 
@@ -1570,7 +1638,7 @@ body.pagelayout-login .login-layout-left-content {
 }
 
 // Dark login form fields.
-[data-bs-theme="dark"] body.pagelayout-login .login-container .form-control {
+body.pagelayout-login .login-container .form-control {
     background-color: var(--poli-surface-muted) !important;
     border-color: var(--poli-border) !important;
     color: var(--bs-body-color) !important;
@@ -1716,75 +1784,68 @@ body.pagelayout-login .login-layout-left-content {
 }
 
 // =============================================================================
-// Dark mode — final audit: eliminate any white surface / white-on-hover.
+// Final audit: eliminate any white surface / white-on-hover.
 // =============================================================================
-[data-bs-theme="dark"] {
-    .bg-white,
-    .bg-light,
-    .card-footer,
-    .list-group-item,
-    .table,
-    .table > :not(caption) > * > * {
-        background-color: var(--poli-surface) !important;
-        color: var(--bs-body-color);
-    }
+.bg-white,
+.bg-light,
+.card-footer,
+.list-group-item,
+.table,
+.table > :not(caption) > * > * {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color);
+}
 
-    // Any interactive hover that Boost paints light → use a dark elevation.
-    a.list-group-item-action:hover,
-    .list-group-item-action:hover,
-    .dropdown-item:hover,
-    .dropdown-item:focus,
-    .courseindex-item:hover,
-    .courseindex-link:hover,
-    .activity-item:hover,
-    .menu-action:hover,
-    .nav-tabs .nav-link:hover,
-    .block .list-group-item:hover,
-    .generaltable tbody tr:hover td,
-    .table-hover > tbody > tr:hover > * {
-        background-color: var(--poli-surface-muted) !important;
-        color: var(--bs-body-color) !important;
-    }
+// Any interactive hover that Boost paints light -> use a dark elevation.
+a.list-group-item-action:hover,
+.list-group-item-action:hover,
+.dropdown-item:hover,
+.dropdown-item:focus,
+.courseindex-item:hover,
+.courseindex-link:hover,
+.activity-item:hover,
+.menu-action:hover,
+.nav-tabs .nav-link:hover,
+.block .list-group-item:hover,
+.generaltable tbody tr:hover td,
+.table-hover > tbody > tr:hover > * {
+    background-color: var(--poli-surface-muted) !important;
+    color: var(--bs-body-color) !important;
+}
 
-    // Keep active/selected states branded, not white.
-    .dropdown-item.active,
-    .dropdown-item:active,
-    .list-group-item.active,
-    .page-item.active .page-link {
-        background-color: var(--poli-primary) !important;
-        color: #fff !important;
-        border-color: var(--poli-primary) !important;
-    }
+// Keep active/selected states branded, not white.
+.dropdown-item.active,
+.dropdown-item:active,
+.list-group-item.active,
+.page-item.active .page-link {
+    background-color: var(--poli-primary) !important;
+    color: #fff !important;
+    border-color: var(--poli-primary) !important;
+}
 
-    // Inputs, popovers, tooltips, modals.
-    .modal-content,
-    .popover,
-    .popover-body,
-    .tooltip-inner,
-    .dropdown-menu {
-        background-color: var(--poli-surface) !important;
-        color: var(--bs-body-color);
-        border-color: var(--poli-border);
-    }
+// Inputs, popovers, tooltips, modals.
+.modal-content,
+.popover,
+.popover-body,
+.tooltip-inner,
+.dropdown-menu {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color);
+    border-color: var(--poli-border);
+}
 
-    // Course overview block cards keep dark.
-    .block_myoverview .dashboard-card,
-    .block_myoverview .card {
-        background-color: var(--poli-surface) !important;
-    }
+// Course overview block cards keep dark.
+.block_myoverview .dashboard-card,
+.block_myoverview .card {
+    background-color: var(--poli-surface) !important;
 }
 
 // =============================================================================
-// Logo (light / dark) + wordmark fallback.
+// Logo + wordmark fallback.
 // =============================================================================
 .poli-logo {
     max-height: 38px;
     width: auto;
-}
-
-[data-bs-theme="light"] .poli-logo-dark,
-[data-bs-theme="dark"] .poli-logo-light {
-    display: none !important;
 }
 
 .poli-wordmark {
@@ -1983,39 +2044,109 @@ body.pagelayout-login .login-layout-left-content {
     color: var(--poli-primary) !important;
 }
 
-// Course index — active item legible (white text on brand), hover subtle.
-.courseindex .courseindex-item.active,
-.courseindex .courseindex-item.active .courseindex-link,
-.courseindex .courseindex-link.active,
-.courseindex [aria-current="true"] {
-    background-color: var(--poli-primary) !important;
-    border-radius: 0.5rem;
-}
+// Course index — active item must keep label/icon visible on the brand fill.
+.courseindex {
+    .courseindex-item,
+    .courseindex-link {
+        border-radius: 0.65rem;
+    }
 
-.courseindex .courseindex-item.active,
-.courseindex .courseindex-item.active *,
-.courseindex .courseindex-link.active,
-.courseindex .courseindex-link.active *,
-.courseindex [aria-current="true"],
-.courseindex [aria-current="true"] * {
-    color: #fff !important;
-}
+    .courseindex-link {
+        min-height: 2.15rem;
+        padding: 0.42rem 0.65rem;
+        color: var(--poli-text-muted) !important;
+        opacity: 1 !important;
+        transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+    }
 
-.courseindex .courseindex-item:hover:not(.active) {
-    background-color: var(--poli-surface-muted) !important;
-}
+    .courseindex-item:hover:not(.active):not(.pageitem),
+    .courseindex-link:hover:not(.active) {
+        background-color: var(--poli-surface-muted) !important;
+        color: var(--bs-body-color) !important;
+    }
 
-.courseindex .courseindex-item:hover:not(.active) .courseindex-link,
-.courseindex .courseindex-link:hover {
-    color: var(--bs-body-color) !important;
-}
+    .courseindex-item.active,
+    .courseindex-item.pageitem,
+    .courseindex-link.active,
+    .courseindex-link[aria-current="true"],
+    [aria-current="true"] {
+        background:
+            linear-gradient(135deg, var(--poli-primary), #{mix($poli-brand-primary, $poli-brand-accent, 74%)}) !important;
+        border-color: transparent !important;
+        box-shadow: 0 10px 22px -14px rgba(var(--poli-primary-rgb), 0.85);
+    }
 
-// Completion bullets: brand cyan comes from $success=teal (keeps Moodle's
-// original dot shape). Only force white inside the active (brand-filled) item.
-.courseindex .courseindex-item.active .completioninfo {
-    color: #fff !important;
-    background-color: #fff !important;
-    border-color: #fff !important;
+    .courseindex-item.active,
+    .courseindex-item.active > .courseindex-link,
+    .courseindex-item.pageitem,
+    .courseindex-item.pageitem > .courseindex-link,
+    .courseindex-link.active,
+    .courseindex-link[aria-current="true"],
+    [aria-current="true"],
+    [aria-current="true"] > .courseindex-link {
+        color: #031317 !important;
+        font-weight: 800;
+        opacity: 1 !important;
+        text-shadow: none;
+    }
+
+    .courseindex-item.active .courseindex-link,
+    .courseindex-item.active .courseindex-link *,
+    .courseindex-item.pageitem .courseindex-link,
+    .courseindex-item.pageitem .courseindex-link *,
+    .courseindex-link.active,
+    .courseindex-link.active *,
+    .courseindex-link[aria-current="true"],
+    .courseindex-link[aria-current="true"] * {
+        color: #031317 !important;
+        fill: #031317 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    .courseindex-item.active .completioninfo,
+    .courseindex-item.pageitem .completioninfo,
+    .courseindex-link.active .completioninfo,
+    [aria-current="true"] .completioninfo {
+        display: inline-block !important;
+        flex: 0 0 0.62rem !important;
+        width: 0.62rem !important;
+        height: 0.62rem !important;
+        min-width: 0.62rem !important;
+        min-height: 0.62rem !important;
+        margin-inline: 0.35rem 0.55rem !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        clip-path: circle(50%) !important;
+        color: transparent !important;
+        background: rgba(3, 19, 23, 0.72) !important;
+        border: 0 !important;
+        box-shadow: 0 0 0 3px rgba(#031317, 0.14) !important;
+        overflow: hidden !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+
+        .icon,
+        img,
+        svg,
+        i {
+            display: none !important;
+        }
+
+        &::before,
+        &::after {
+            content: none !important;
+            display: none !important;
+        }
+    }
+
+    .courseindex-item.active .courseindex-chevron,
+    .courseindex-item.pageitem .courseindex-chevron,
+    .courseindex-link.active .courseindex-chevron,
+    [aria-current="true"] .courseindex-chevron {
+        color: #031317 !important;
+        background: transparent !important;
+    }
 }
 
 // Notifications / messages popover — readable text + brand actions.
@@ -2057,6 +2188,189 @@ body.pagelayout-login .login-layout-left-content {
     .popover-region-footer-container {
         border-top: 1px solid var(--poli-border);
     }
+}
+
+// Notifications + messaging drawer: Boost injects many literal light panels.
+.popover-region-notifications,
+[data-region="popover-region-messages"],
+.message-app,
+[data-region="message-drawer"],
+.message-drawer {
+    background: var(--poli-surface) !important;
+    color: var(--bs-body-color) !important;
+
+    .popover-region-container,
+    .popover-region-content-container,
+    .popover-region-content,
+    .popover-region-footer-container,
+    .popover-region-header-container,
+    .all-notifications,
+    .empty-message,
+    .content-item-container,
+    .notification-item,
+    [data-region="body-container"],
+    [data-region="view-overview"],
+    [data-region="view-contacts"],
+    [data-region="view-conversation"],
+    [data-region="view-search"],
+    [data-region="contacts-container"],
+    [data-region="contact-list-container"],
+    [data-region="messages-container"],
+    [data-region="conversation"],
+    [data-region="content-container"],
+    [data-region="footer-container"],
+    [data-region="header-container"],
+    .message-app,
+    .list-group,
+    .list-group-item,
+    .card,
+    .bg-white,
+    .bg-light {
+        background-color: var(--poli-surface) !important;
+        color: var(--bs-body-color) !important;
+        border-color: var(--poli-border) !important;
+    }
+
+    .popover-region-header-container,
+    [data-region="header-container"],
+    .border-bottom {
+        background:
+            linear-gradient(135deg, rgba(var(--poli-primary-rgb), 0.08), rgba(var(--poli-accent-rgb), 0.04)),
+            var(--poli-surface) !important;
+        border-bottom: 1px solid var(--poli-border) !important;
+    }
+
+    .popover-region-header-text,
+    h3,
+    h4,
+    [data-region="view-overview"] h3,
+    [data-region="contact-name"],
+    [data-region="name"],
+    .name,
+    .title {
+        color: var(--bs-emphasis-color) !important;
+        font-weight: 800;
+    }
+
+    .notification-message,
+    .notification-message a,
+    .notification-item__text,
+    .subject,
+    .last-message,
+    .message,
+    [data-region="last-message"],
+    [data-region="message-text"],
+    [data-region="text-container"] {
+        color: var(--bs-body-color) !important;
+    }
+
+    .time,
+    .notification-time,
+    .notification-item__time,
+    .content-item-footer,
+    .text-muted,
+    small,
+    [data-region="last-message-date"],
+    [data-region="time-created"] {
+        color: var(--poli-text-muted) !important;
+    }
+
+    a,
+    .btn-link,
+    .see-all-link,
+    .popover-region-seeall-text,
+    [data-action],
+    [data-region="view-all-contacts"] {
+        color: var(--poli-primary) !important;
+    }
+
+    .content-item-container,
+    .notification-item,
+    .list-group-item,
+    [data-region="contact"],
+    [data-region="conversation"],
+    [data-region="favourite-conversation"],
+    [data-region="group-message"],
+    [data-region="private-message"] {
+        border-color: var(--poli-border) !important;
+        transition: background-color 0.16s ease, color 0.16s ease;
+
+        &:hover,
+        &:focus {
+            background-color: var(--poli-surface-muted) !important;
+            color: var(--bs-emphasis-color) !important;
+        }
+    }
+
+    .content-item-container.unread,
+    .notification-item.unread,
+    .list-group-item.unread,
+    [data-region="contact"].active,
+    [data-region="conversation"].active {
+        background:
+            linear-gradient(90deg, rgba(var(--poli-primary-rgb), 0.13), transparent 70%),
+            var(--poli-surface) !important;
+        border-color: rgba(var(--poli-primary-rgb), 0.38) !important;
+    }
+
+    .form-control,
+    .search-input,
+    input[type="text"],
+    input[type="search"],
+    textarea {
+        background-color: var(--poli-surface-muted) !important;
+        border-color: var(--poli-border) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    .input-group,
+    .input-group-text,
+    .simplesearchform,
+    [data-region="search-input-container"] {
+        background-color: var(--poli-surface-muted) !important;
+        border-color: var(--poli-border) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    .btn,
+    button {
+        border-color: var(--poli-border);
+    }
+
+    .btn-primary,
+    .btn-submit,
+    [data-action="search"] {
+        background: var(--poli-primary) !important;
+        border-color: var(--poli-primary) !important;
+        color: #fff !important;
+    }
+
+    .btn-icon,
+    .btn-link {
+        background: transparent !important;
+        border-color: transparent !important;
+
+        &:hover,
+        &:focus-visible {
+            background: rgba(var(--poli-primary-rgb), 0.12) !important;
+            color: var(--poli-primary) !important;
+        }
+    }
+
+    .icon,
+    i {
+        color: currentColor;
+    }
+}
+
+.popover-region-notifications .popover-region-container::before,
+.popover-region-notifications .popover-region-container::after {
+    border-bottom-color: var(--poli-surface) !important;
+}
+
+.message-app {
+    border-left: 1px solid var(--poli-border) !important;
+    box-shadow: var(--poli-shadow-lg) !important;
 }
 
 // =============================================================================
@@ -2224,8 +2538,42 @@ body.pagelayout-login .login-layout-right {
 // =============================================================================
 .course-listing,
 .management-course-listing,
-.course-category-listings {
+#course-category-listings,
+#coursecat-management,
+.category-listing {
+    .card,
+    &.card,
+    .category-listing,
+    .course-listing,
+    .course-detail,
+    #category-listing,
+    #course-listing,
+    #course-detail {
+        background: var(--poli-surface) !important;
+        color: var(--bs-body-color) !important;
+        border-color: var(--poli-border) !important;
+    }
+
+    .card-header,
+    h3.card-header,
+    .listing-actions,
+    .bulk-actions,
+    .listing-pagination,
+    .detail-pair,
+    .course-detail-section {
+        background: var(--poli-surface) !important;
+        color: var(--bs-emphasis-color) !important;
+        border-color: var(--poli-border) !important;
+    }
+
+    .card-body {
+        background: var(--poli-surface) !important;
+        color: var(--bs-body-color) !important;
+    }
+
     .listitem {
+        background: var(--poli-surface-muted) !important;
+        color: var(--bs-body-color) !important;
         border-radius: 0.85rem;
         border: 1px solid var(--poli-border);
         margin-bottom: 0.5rem;
@@ -2238,9 +2586,51 @@ body.pagelayout-login .login-layout-right {
         }
     }
 
+    .list-group,
+    .list-group-item,
+    .list-group-item-action {
+        background-color: transparent !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    .listitem[data-selected="1"],
+    .listitem.active,
+    .list-group-item.active,
+    .course-item-actions,
+    .category-item-actions {
+        color: var(--bs-body-color) !important;
+    }
+
+    .listitem[data-selected="1"] {
+        background:
+            linear-gradient(90deg, rgba(var(--poli-primary-rgb), 0.18), rgba(var(--poli-primary-rgb), 0.06)),
+            var(--poli-surface-muted) !important;
+        border-color: rgba(var(--poli-primary-rgb), 0.62) !important;
+        box-shadow: inset 4px 0 0 var(--poli-primary);
+    }
+
+    .categoryname,
+    .coursename,
+    .course-detail-title,
+    .listitem a,
+    .item-actions a {
+        color: var(--poli-primary) !important;
+    }
+
+    .text-muted,
+    .course-count,
+    .detail-pair-label,
+    .listing-pagination {
+        color: var(--poli-text-muted) !important;
+    }
+
     .listitem .courseactions .action-icon,
-    .listitem .commands a {
-        color: var(--poli-primary);
+    .listitem .commands a,
+    .menu-action,
+    .action-menu .dropdown-toggle,
+    .iconsmall,
+    .icon {
+        color: var(--poli-primary) !important;
     }
 
     // Course name link must stay visible on hover AND on the selected row
@@ -2264,6 +2654,48 @@ body.pagelayout-login .login-layout-right {
         background: rgba(var(--poli-primary-rgb), 0.10) !important;
         border-color: rgba(var(--poli-primary-rgb), 0.5) !important;
     }
+
+    .form-control,
+    .form-select,
+    .custom-select,
+    select,
+    input[type="text"] {
+        background-color: var(--poli-surface-muted) !important;
+        color: var(--bs-body-color) !important;
+        border-color: var(--poli-border) !important;
+    }
+
+    .form-control:disabled,
+    .form-select:disabled,
+    .custom-select:disabled,
+    select:disabled,
+    input:disabled,
+    .disabled,
+    [disabled] {
+        opacity: 0.62;
+        color: var(--poli-text-muted) !important;
+        background-color: rgba(#fff, 0.035) !important;
+        border-color: rgba(#fff, 0.06) !important;
+    }
+
+    .btn-secondary,
+    .btn-outline-secondary {
+        background: var(--poli-surface-muted) !important;
+        color: var(--bs-body-color) !important;
+        border-color: var(--poli-border) !important;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--poli-primary) !important;
+            border-color: rgba(var(--poli-primary-rgb), 0.5) !important;
+            background: rgba(var(--poli-primary-rgb), 0.1) !important;
+        }
+    }
+
+    .form-check-input {
+        background-color: rgba(#fff, 0.04);
+        border-color: rgba(#fff, 0.2);
+    }
 }
 
 // All-courses view: hide the bare core category tree (poli sections replace it),
@@ -2280,6 +2712,399 @@ body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
 }
 
 // =============================================================================
+// Student / guest full-width canvas (courses, enrolment and activities).
+// =============================================================================
+body.path-enrol,
+body.path-course-view,
+body.path-mod,
+body[class*="path-mod-"],
+body.path-calendar,
+body.path-grade,
+body.path-user,
+body.path-message,
+body.path-badges {
+    #page.drawers .main-inner {
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    #page-header,
+    .secondary-navigation,
+    #page-content {
+        max-width: 1280px;
+        margin-inline: auto;
+        padding-inline: clamp(1rem, 4vw, 2rem);
+    }
+
+    #page-header {
+        padding-top: clamp(1.75rem, 4vw, 3rem);
+    }
+
+    #page-content {
+        padding-top: 1rem;
+        padding-bottom: clamp(2rem, 5vw, 4rem);
+    }
+
+    #region-main,
+    #region-main-box {
+        background: transparent !important;
+        border: 0;
+        padding: 0;
+    }
+}
+
+// Enrolment page: full-width course landing with a controlled poster.
+body.path-enrol {
+    #page-header {
+        .page-header-headings h1 {
+            font-size: clamp(2.2rem, 4.6vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.055em;
+            line-height: 0.98;
+        }
+    }
+
+    #region-main > div[role="main"] {
+        display: grid;
+        gap: 1.15rem;
+    }
+
+    #region-main h2 {
+        margin: 0 0 0.15rem;
+        font-size: clamp(1.55rem, 3vw, 2.35rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+    }
+
+    .box.generalbox.info {
+        position: relative;
+        overflow: hidden;
+        padding: 0 !important;
+        border: 1px solid var(--poli-border);
+        border-radius: 1.5rem;
+        background:
+            radial-gradient(70% 100% at 100% 0%, rgba(var(--poli-accent-rgb), 0.16), transparent 58%),
+            radial-gradient(58% 80% at 0% 100%, rgba(var(--poli-primary-rgb), 0.18), transparent 56%),
+            var(--poli-surface);
+        box-shadow: var(--poli-shadow);
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset-inline: 0;
+            top: 0;
+            height: 3px;
+            background: var(--poli-gradient);
+        }
+    }
+
+    .coursebox {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+        grid-template-areas:
+            "title poster"
+            "body poster";
+        gap: clamp(1.5rem, 4vw, 3rem);
+        align-items: stretch;
+        min-height: clamp(280px, 34vw, 360px);
+        padding: 0;
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+
+        .info {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            grid-area: title;
+            align-self: end;
+            padding: 0;
+
+            &::before {
+                content: "";
+                display: inline-flex;
+                align-items: center;
+                width: fit-content;
+                min-height: 1.8rem;
+                margin-bottom: 1rem;
+                padding: 0.38rem 0.8rem;
+                border-radius: 50rem;
+                color: #d9fbff;
+                background: rgba(var(--poli-primary-rgb), 0.22);
+                border: 1px solid rgba(var(--poli-primary-rgb), 0.34);
+                box-shadow: inset 0 1px 0 rgba(#fff, 0.12);
+                font-size: 0.78rem;
+                font-weight: 800;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                flex: 0 0 auto;
+            }
+        }
+
+        .coursename {
+            display: block;
+            width: 100%;
+            margin: 0;
+            font-family: $headings-font-family;
+            font-size: clamp(1.85rem, 4vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1.02;
+            letter-spacing: -0.055em;
+
+            a {
+                color: var(--bs-emphasis-color);
+                text-decoration: none;
+
+                &:hover {
+                    color: var(--poli-primary);
+                }
+            }
+        }
+
+        .content {
+            padding: 0;
+            display: contents !important;
+
+            > .d-flex {
+                display: contents !important;
+            }
+        }
+
+        .courseimage {
+            grid-area: poster;
+            position: relative;
+            width: 100%;
+            min-height: 100%;
+            overflow: hidden;
+            border-radius: 1.25rem;
+            background:
+                radial-gradient(75% 75% at 20% 18%, rgba(#fff, 0.24), transparent 42%),
+                linear-gradient(135deg, var(--poli-primary), #{mix($poli-brand-primary, $poli-brand-accent, 48%)} 52%, var(--poli-accent));
+            box-shadow:
+                inset 0 0 0 1px rgba(#fff, 0.12),
+                0 22px 46px -28px rgba(var(--poli-accent-rgb), 0.72);
+
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+                pointer-events: none;
+            }
+
+            &::before {
+                inset: 1rem;
+                border: 1px solid rgba(#fff, 0.18);
+                border-radius: 1rem;
+            }
+
+            &::after {
+                width: 150px;
+                height: 150px;
+                right: -42px;
+                top: -42px;
+                border-radius: 50%;
+                background: rgba(#fff, 0.18);
+                box-shadow:
+                    -190px 180px 0 -54px rgba(#fff, 0.13),
+                    -80px 110px 0 -74px rgba(#fff, 0.18);
+            }
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                border-radius: 0;
+                opacity: 0.18;
+                filter: blur(10px) saturate(1.4) contrast(1.06);
+                transform: scale(1.12);
+            }
+        }
+
+        .flex-grow-1 {
+            grid-area: body;
+            align-self: start;
+            max-width: 68ch;
+        }
+
+        .summary {
+            color: var(--bs-body-color);
+            font-size: clamp(1rem, 1.5vw, 1.12rem);
+            line-height: 1.65;
+            margin-bottom: 1.1rem;
+            max-width: 58ch;
+        }
+
+        .teachers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+
+            li {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                padding: 0.35rem 0.7rem;
+                border-radius: 50rem;
+                color: var(--poli-text-muted);
+                background: rgba(#fff, 0.06);
+                border: 1px solid var(--poli-border);
+            }
+
+            a {
+                color: var(--poli-primary);
+                font-weight: 700;
+            }
+        }
+    }
+
+    #notice.generalbox {
+        padding: 1rem 1.2rem !important;
+        border-radius: 1rem;
+        border: 1px solid rgba(var(--poli-tertiary-rgb), 0.34);
+        color: #fff2bf;
+        background:
+            linear-gradient(135deg, rgba(var(--poli-tertiary-rgb), 0.15), rgba(var(--poli-tertiary-rgb), 0.05)),
+            var(--poli-surface);
+        box-shadow: var(--poli-shadow-sm);
+    }
+
+    .continuebutton {
+        display: flex;
+        justify-content: center;
+        padding: 0.25rem 0 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+
+        .btn {
+            min-width: 180px;
+            border-radius: 50rem;
+            padding-block: 0.75rem;
+            box-shadow: 0 10px 24px -12px rgba(var(--poli-primary-rgb), 0.75);
+        }
+    }
+}
+
+// Calendar, grades, profile and messaging: common student utilities.
+body.path-calendar,
+body.path-grade,
+body.path-user,
+body.path-message,
+body.path-badges {
+    .maincalendar,
+    .maincalendar .heightcontainer,
+    .calendarwrapper {
+        width: 100%;
+        max-width: none;
+    }
+
+    .maincalendar,
+    .calendarwrapper,
+    .userprofile,
+    .profile_tree,
+    .grade-report-user,
+    .gradereport-user,
+    .message-app,
+    .badges,
+    .generalbox {
+        border-radius: var(--poli-radius-xl);
+        border: 1px solid var(--poli-border);
+        background: var(--poli-surface);
+        box-shadow: var(--poli-shadow-sm);
+    }
+
+    .maincalendar,
+    .calendarwrapper,
+    .userprofile,
+    .profile_tree,
+    .grade-report-user,
+    .gradereport-user {
+        padding: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .maincalendar .header,
+    .calendar-controls,
+    .calendar_event_course,
+    .calendar_event_user,
+    .calendar_event_group,
+    .calendar_event_site,
+    .calendar_event_category {
+        background: transparent;
+        color: var(--bs-body-color);
+    }
+
+    .calendarmonth {
+        overflow: hidden;
+        border-radius: 1rem;
+        border: 1px solid var(--poli-border);
+
+        th {
+            color: var(--bs-emphasis-color);
+            background: var(--poli-surface-muted) !important;
+        }
+
+        td {
+            background: var(--poli-surface) !important;
+            border-color: var(--poli-border) !important;
+        }
+
+        td.today {
+            background:
+                linear-gradient(135deg, rgba(var(--poli-primary-rgb), 0.16), rgba(var(--poli-accent-rgb), 0.08)),
+                var(--poli-surface) !important;
+            box-shadow: inset 0 0 0 2px rgba(var(--poli-primary-rgb), 0.55);
+        }
+
+        .day-number-circle {
+            background: rgba(var(--poli-primary-rgb), 0.16);
+            color: var(--poli-primary);
+        }
+    }
+
+    .eventlist,
+    .event,
+    .calendar-event-panel {
+        border-color: var(--poli-border);
+        background: var(--poli-surface);
+        color: var(--bs-body-color);
+    }
+}
+
+@include media-breakpoint-down(md) {
+    body.path-enrol .coursebox {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "poster"
+            "title"
+            "body";
+        min-height: 0;
+
+        .info,
+        .content,
+        .courseimage,
+        .flex-grow-1 {
+            grid-column: auto;
+            grid-row: auto;
+        }
+
+        .courseimage {
+            min-height: 220px;
+        }
+    }
+}
+
+// =============================================================================
 // Forum + activity information / details (v5).
 // =============================================================================
 
@@ -2293,19 +3118,17 @@ body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
     box-shadow: var(--poli-shadow-sm);
 }
 
-[data-bs-theme="dark"] {
-    .activity-details,
-    [data-region="activity-information"],
-    .activity-information,
-    .activity-description,
-    .forumheaderlist,
-    .forumpost,
-    .discussion-list,
-    table.table.discussion-list,
-    .forumsearch .form-control {
-        background-color: var(--poli-surface) !important;
-        color: var(--bs-body-color);
-    }
+.activity-details,
+[data-region="activity-information"],
+.activity-information,
+.activity-description,
+.forumheaderlist,
+.forumpost,
+.discussion-list,
+table.table.discussion-list,
+.forumsearch .form-control {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color);
 }
 
 // Search submit buttons (forum search, etc.) → brand teal, like other searches.
@@ -2324,6 +3147,33 @@ body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
 
 // Forum discussion list → clean rows + brand links.
 .path-mod-forum {
+    #page-header .activityiconcontainer.modicon_forum,
+    #page-header .activityiconcontainer.collaboration.modicon_forum {
+        position: relative;
+        color: var(--poli-accent) !important;
+        background: transparent !important;
+        border: 0;
+        box-shadow: none;
+
+        .icon,
+        img,
+        i,
+        svg {
+            display: none !important;
+        }
+
+        &::before {
+            content: "";
+            display: block;
+            width: 2.75rem;
+            height: 2.75rem;
+            background: var(--poli-accent);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.75A2.75 2.75 0 0 1 6.75 3h10.5A2.75 2.75 0 0 1 20 5.75v7.5A2.75 2.75 0 0 1 17.25 16H9l-5 4V5.75Z'/%3E%3Cpath d='M8 8h8M8 11.5h5'/%3E%3C/svg%3E") center / contain no-repeat;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.75A2.75 2.75 0 0 1 6.75 3h10.5A2.75 2.75 0 0 1 20 5.75v7.5A2.75 2.75 0 0 1 17.25 16H9l-5 4V5.75Z'/%3E%3Cpath d='M8 8h8M8 11.5h5'/%3E%3C/svg%3E") center / contain no-repeat;
+            filter: drop-shadow(0 10px 18px rgba(var(--poli-accent-rgb), 0.38));
+        }
+    }
+
     .discussion-list a,
     .forumpost .author a,
     .topic a {
@@ -2347,6 +3197,33 @@ body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
     .badge { border-radius: 50rem; }
 }
 
+.course-content .activity.modtype_forum .activityiconcontainer.courseicon,
+.course-content .activity.forum .activityiconcontainer.courseicon {
+    position: relative;
+    color: var(--poli-accent) !important;
+    background: transparent !important;
+    border: 0;
+    box-shadow: none;
+
+    .activityicon,
+    img,
+    i,
+    svg {
+        display: none !important;
+    }
+
+    &::before {
+        content: "";
+        display: block;
+        width: 1.65rem;
+        height: 1.65rem;
+        background: var(--poli-accent);
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.75A2.75 2.75 0 0 1 6.75 3h10.5A2.75 2.75 0 0 1 20 5.75v7.5A2.75 2.75 0 0 1 17.25 16H9l-5 4V5.75Z'/%3E%3Cpath d='M8 8h8M8 11.5h5'/%3E%3C/svg%3E") center / contain no-repeat;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.75A2.75 2.75 0 0 1 6.75 3h10.5A2.75 2.75 0 0 1 20 5.75v7.5A2.75 2.75 0 0 1 17.25 16H9l-5 4V5.75Z'/%3E%3Cpath d='M8 8h8M8 11.5h5'/%3E%3C/svg%3E") center / contain no-repeat;
+        filter: drop-shadow(0 8px 14px rgba(var(--poli-accent-rgb), 0.34));
+    }
+}
+
 // Alerts: keep readable, brand-tinted (info=teal already via palette).
 .alert {
     border-radius: var(--poli-radius-lg);
@@ -2354,11 +3231,11 @@ body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
 }
 
 // =============================================================================
-// Edit forms (modedit, course settings) — dark mode fixes (v6).
+// Edit forms (modedit, course settings) — dark-only fixes.
 // =============================================================================
 
 // Secondary buttons (Cancel, etc.) adapt in dark instead of staying light grey.
-[data-bs-theme="dark"] .btn-secondary {
+.btn-secondary {
     --bs-btn-bg: var(--poli-surface-muted);
     --bs-btn-border-color: var(--poli-border);
     --bs-btn-color: var(--bs-body-color);
@@ -2370,72 +3247,562 @@ body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
 }
 
 // mform collapsible section toggle "bullet" circle → brand tint (was light teal).
-[data-bs-theme="dark"] {
-    .icons-collapse-expand,
-    .btn-icon.fheader,
-    .collapseexpand .icon {
-        background-color: rgba(var(--poli-primary-rgb), 0.18) !important;
-        color: var(--poli-primary) !important;
+.icons-collapse-expand,
+.btn-icon.fheader,
+.collapseexpand .icon {
+    background-color: rgba(var(--poli-primary-rgb), 0.18) !important;
+    color: var(--poli-primary) !important;
+}
+
+// TinyMCE / editors — dark chrome (toolbar, menubar, statusbar, edit area).
+.tox.tox-tinymce,
+.tox.tox-tinymce-aux,
+.tox .tox-dialog,
+.tox .tox-menu,
+.tox .tox-collection__item,
+.tox .tox-pop,
+.editor_atto,
+.editor_atto_toolbar,
+.editor_atto_content_wrap {
+    border-color: var(--poli-border) !important;
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.tox .tox-editor-header,
+.tox .tox-menubar,
+.tox .tox-toolbar-overlord,
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-toolbar__overflow,
+.tox .tox-statusbar,
+.tox .tox-sidebar,
+.tox-edit-area,
+.tox .tox-edit-area__iframe,
+.tox .tox-edit-area,
+.tox .tox-edit-area::before,
+.tox .tox-edit-area iframe,
+.editor_atto_toolbar,
+.editor_atto_content,
+.editor_atto_content_wrap,
+.editor_atto + textarea {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.tox .tox-tbtn,
+.tox .tox-mbtn,
+.tox .tox-tbtn__select-label,
+.tox .tox-statusbar,
+.tox .tox-statusbar a,
+.tox .tox-statusbar__path-item,
+.tox .tox-collection__item,
+.tox .tox-collection__item-label,
+.tox .tox-mbtn__select-label,
+.tox .tox-dialog__title,
+.tox .tox-label,
+.tox .tox-form__group,
+.editor_atto_toolbar button {
+    color: var(--bs-body-color) !important;
+}
+
+.tox .tox-tbtn svg,
+.tox .tox-mbtn svg,
+.tox .tox-collection__item-icon svg {
+    fill: var(--bs-body-color) !important;
+}
+
+.tox .tox-tbtn:hover,
+.tox .tox-mbtn:hover,
+.tox .tox-tbtn--enabled,
+.tox .tox-collection__item--active,
+.tox .tox-collection__item--enabled,
+.tox .tox-collection__item:hover,
+.editor_atto_toolbar button:hover,
+.editor_atto_toolbar button.highlight {
+    background: var(--poli-surface-muted) !important;
+    color: var(--poli-primary) !important;
+}
+
+.tox:not(.tox-tinymce-inline) .tox-editor-header {
+    border-bottom: 1px solid var(--poli-border) !important;
+    box-shadow: none !important;
+}
+
+.tox .tox-statusbar {
+    border-top: 1px solid var(--poli-border) !important;
+    color: var(--poli-text-muted) !important;
+}
+
+.tox .tox-toolbar__group,
+.tox .tox-menubar,
+.tox .tox-statusbar,
+.editor_atto_toolbar {
+    border-color: var(--poli-border) !important;
+}
+
+.tox .tox-textarea,
+.tox .tox-textfield,
+.tox .tox-listboxfield .tox-listbox--select,
+.tox .tox-selectfield select,
+.editor_atto_content {
+    background-color: var(--poli-surface-muted) !important;
+    border-color: var(--poli-border) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.tox .tox-edit-area__iframe {
+    color-scheme: dark;
+}
+
+.tox .tox-mbtn__select-label,
+.tox .tox-tbtn__select-label {
+    color: var(--bs-body-color) !important;
+}
+
+// Hide the "Build with TinyMCE" promo/branding for a cleaner editor.
+.tox .tox-promotion,
+.tox .tox-statusbar__branding {
+    display: none !important;
+}
+
+// =============================================================================
+// Dark-only experience sweep - student surfaces, states and Moodle leftovers.
+// =============================================================================
+
+// Links: no default purple visited state, no washed-out hover on dark.
+a:not(.btn):not(.dropdown-item):not(.nav-link):not(.page-link) {
+    color: var(--poli-primary);
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 0.08em;
+
+    &:visited { color: var(--poli-primary); }
+
+    &:hover,
+    &:focus-visible {
+        color: #{lighten($poli-brand-primary, 12%)};
+        text-decoration-color: rgba(var(--poli-primary-rgb), 0.7);
     }
 }
 
-// TinyMCE — dark chrome (toolbar, menubar, statusbar, edit area).
-[data-bs-theme="dark"] {
-    .tox.tox-tinymce {
+// Moodle often emits raw lists inside labels, pages, books, forums and quiz text.
+#region-main,
+.activity-description,
+.generalbox,
+.box.generalbox,
+.no-overflow {
+    li::marker {
+        color: var(--poli-primary);
+    }
+
+    hr {
+        border-color: var(--poli-border);
+        opacity: 1;
+    }
+}
+
+// Alerts and toast messages: semantic, dark, brand-tinted.
+.alert,
+.toast,
+.toast-wrapper .toast {
+    color: var(--bs-body-color);
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+
+    a { font-weight: 700; }
+
+    .icon,
+    i {
+        color: currentColor;
+    }
+}
+
+.alert-info,
+.alert-primary {
+    color: #d9fbff;
+    background:
+        linear-gradient(135deg, rgba(var(--poli-primary-rgb), 0.16), rgba(var(--poli-primary-rgb), 0.06)),
+        var(--poli-surface);
+    border-color: rgba(var(--poli-primary-rgb), 0.42);
+}
+
+.alert-success {
+    color: #d9fbff;
+    background:
+        linear-gradient(135deg, rgba(var(--poli-primary-rgb), 0.18), rgba(var(--poli-primary-rgb), 0.07)),
+        var(--poli-surface);
+    border-color: rgba(var(--poli-primary-rgb), 0.48);
+}
+
+.alert-warning {
+    color: #fff2bf;
+    background:
+        linear-gradient(135deg, rgba(var(--poli-tertiary-rgb), 0.18), rgba(var(--poli-tertiary-rgb), 0.07)),
+        var(--poli-surface);
+    border-color: rgba(var(--poli-tertiary-rgb), 0.46);
+}
+
+.alert-danger {
+    color: #ffd7ec;
+    background:
+        linear-gradient(135deg, rgba(var(--poli-accent-rgb), 0.18), rgba(var(--poli-accent-rgb), 0.07)),
+        var(--poli-surface);
+    border-color: rgba(var(--poli-accent-rgb), 0.48);
+}
+
+// Badges and status pills: no pale backgrounds that disappear on dark.
+.badge,
+.tag,
+.badge-pill,
+.status,
+.completion-info,
+.automatic-completion-conditions .badge {
+    border-radius: 50rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.badge.bg-light,
+.badge.text-bg-light,
+.badge-light,
+.tag {
+    color: var(--bs-body-color) !important;
+    background: rgba(#fff, 0.08) !important;
+    border: 1px solid var(--poli-border);
+}
+
+.badge.bg-info,
+.badge.text-bg-info,
+.badge.bg-primary,
+.badge.text-bg-primary {
+    color: #fff !important;
+    background: var(--poli-primary) !important;
+}
+
+.badge.bg-warning,
+.badge.text-bg-warning {
+    color: #231a00 !important;
+    background: var(--poli-tertiary) !important;
+}
+
+.badge.bg-danger,
+.badge.text-bg-danger {
+    color: #fff !important;
+    background: var(--poli-accent) !important;
+}
+
+// Forms, autocomplete, file picker and disabled fields.
+.form-control,
+.form-select,
+.custom-select,
+.form-autocomplete-selection,
+.form-autocomplete-suggestions,
+.filemanager,
+.filepicker-filelist,
+.fp-content,
+.fp-navbar,
+.fp-pathbar,
+.fp-viewbar,
+.fp-restrictions,
+.mform fieldset,
+.mform .fcontainer {
+    color: var(--bs-body-color);
+    background-color: var(--poli-surface-muted);
+    border-color: var(--poli-border);
+}
+
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: rgba(228, 230, 237, 0.45);
+}
+
+.form-control:disabled,
+.form-select:disabled,
+.custom-select:disabled,
+fieldset:disabled .form-control {
+    color: rgba(228, 230, 237, 0.54);
+    background-color: rgba(#fff, 0.04);
+    border-color: rgba(#fff, 0.07);
+}
+
+.form-check-input {
+    background-color: var(--poli-surface-muted);
+    border-color: rgba(#fff, 0.28);
+}
+
+.form-check-input:checked {
+    box-shadow: 0 0 0 0.18rem rgba(var(--poli-primary-rgb), 0.18);
+}
+
+// Dropdowns, menus and action sheets.
+.dropdown-menu,
+.dropdown-menu.show,
+.action-menu .dropdown-menu,
+.simplesearchform .collapse.show,
+.moremenu .dropdown-menu {
+    border-radius: 0.9rem;
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-lg);
+}
+
+.dropdown-item,
+.dropdown-menu a,
+.menu-action {
+    color: var(--bs-body-color);
+
+    .icon,
+    i {
+        color: var(--poli-text-muted);
+    }
+
+    &:hover,
+    &:focus {
+        background: rgba(var(--poli-primary-rgb), 0.1) !important;
+        color: var(--bs-emphasis-color) !important;
+
+        .icon,
+        i {
+            color: var(--poli-primary);
+        }
+    }
+}
+
+// Tables used by grades, quizzes, forums and reports.
+.generaltable,
+.table,
+.gradeparent,
+.gradingtable,
+.submissionstatustable {
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+
+    thead,
+    th {
+        color: var(--bs-emphasis-color);
+        background: var(--poli-surface-muted) !important;
         border-color: var(--poli-border) !important;
     }
 
-    .tox .tox-editor-header,
-    .tox .tox-menubar,
-    .tox .tox-toolbar-overlord,
-    .tox .tox-toolbar,
-    .tox .tox-toolbar__primary,
-    .tox .tox-toolbar__overflow,
-    .tox .tox-statusbar,
-    .tox .tox-sidebar,
-    .tox-edit-area,
-    .tox .tox-edit-area__iframe {
-        background-color: var(--poli-surface) !important;
+    td {
+        border-color: var(--poli-border) !important;
     }
 
-    .tox .tox-tbtn,
-    .tox .tox-mbtn,
-    .tox .tox-tbtn__select-label,
-    .tox .tox-statusbar,
-    .tox .tox-statusbar a,
-    .tox .tox-statusbar__path-item {
-        color: var(--bs-body-color) !important;
+    tbody tr {
+        transition: background-color 0.15s ease;
     }
 
-    .tox .tox-tbtn svg,
-    .tox .tox-mbtn svg {
-        fill: var(--bs-body-color) !important;
+    tbody tr:hover {
+        background: rgba(var(--poli-primary-rgb), 0.06);
+    }
+}
+
+// Quiz / question pages.
+.path-mod-quiz,
+.path-question {
+    .que,
+    .questionbankwindow,
+    .questionchoosercontainer,
+    .quizattemptsummary,
+    .qnbutton {
+        background: var(--poli-surface);
+        border-color: var(--poli-border);
+        color: var(--bs-body-color);
+        box-shadow: var(--poli-shadow-sm);
     }
 
-    .tox .tox-tbtn:hover,
-    .tox .tox-mbtn:hover,
-    .tox .tox-tbtn--enabled {
-        background: var(--poli-surface-muted) !important;
+    .que {
+        border-radius: var(--poli-radius-xl);
+        overflow: hidden;
+
+        .info {
+            background: var(--poli-surface-muted);
+            border-color: var(--poli-border);
+            color: var(--poli-text-muted);
+        }
+
+        .formulation,
+        .outcome,
+        .comment,
+        .history {
+            background: transparent;
+            color: var(--bs-body-color);
+            border-color: var(--poli-border);
+        }
+
+        .answer div.r0,
+        .answer div.r1 {
+            border-radius: 0.75rem;
+            padding: 0.65rem 0.75rem;
+        }
+
+        .answer div.r0:hover,
+        .answer div.r1:hover {
+            background: rgba(var(--poli-primary-rgb), 0.08);
+        }
     }
 
-    .tox:not(.tox-tinymce-inline) .tox-editor-header {
-        border-bottom: 1px solid var(--poli-border) !important;
-        box-shadow: none !important;
+    .qnbutton.thispage,
+    .qnbutton.flagged,
+    .qnbutton.complete {
+        border-color: var(--poli-primary);
     }
 
-    .tox .tox-statusbar {
-        border-top: 1px solid var(--poli-border) !important;
-        color: var(--poli-text-muted) !important;
+    .qnbutton.thispage {
+        background: var(--poli-primary);
+        color: #fff;
     }
 
-    .tox .tox-mbtn__select-label,
-    .tox .tox-tbtn__select-label {
-        color: var(--bs-body-color) !important;
+    .submitbtns,
+    .quizattemptcounts {
+        background: var(--poli-surface);
+        border: 1px solid var(--poli-border);
+        border-radius: var(--poli-radius-xl);
+        box-shadow: var(--poli-shadow-sm);
+    }
+}
+
+// Assignments, workshops and database-like activity pages.
+.path-mod-assign,
+.path-mod-workshop,
+.path-mod-data,
+.path-mod-lesson,
+.path-mod-choice,
+.path-mod-feedback,
+.path-mod-scorm {
+    .submissionstatustable,
+    .feedback,
+    .gradingtable,
+    .submissionaction,
+    .assignfeedback,
+    .boxaligncenter,
+    .generalbox,
+    .singlebutton + .singlebutton {
+        border-radius: var(--poli-radius-xl);
+        border-color: var(--poli-border);
+        background: var(--poli-surface);
+        color: var(--bs-body-color);
+        box-shadow: var(--poli-shadow-sm);
     }
 
-    // Hide the "Build with TinyMCE" promo/branding for a cleaner editor.
-    .tox .tox-promotion,
-    .tox .tox-statusbar__branding { display: none !important; }
+    .submissionstatussubmitted,
+    .submissiongraded {
+        color: #d9fbff;
+        background: rgba(var(--poli-primary-rgb), 0.12);
+    }
+
+    .submissionstatusdraft,
+    .submissionnotgraded {
+        color: #fff2bf;
+        background: rgba(var(--poli-tertiary-rgb), 0.12);
+    }
+}
+
+// Forum readability: posts, replies, ratings and unread states.
+.path-mod-forum {
+    .discussion-list tr,
+    .forumheaderlist tr {
+        border-color: var(--poli-border);
+    }
+
+    .discussion-list .discussion,
+    .forumpost,
+    .forum-post-container,
+    .indent {
+        background: var(--poli-surface);
+        border-color: var(--poli-border);
+    }
+
+    .forumpost.unread,
+    tr.unread {
+        background:
+            linear-gradient(90deg, rgba(var(--poli-primary-rgb), 0.14), transparent 38%),
+            var(--poli-surface);
+    }
+
+    .forum-post-rating,
+    .ratings,
+    .commands {
+        color: var(--poli-text-muted);
+
+        a:hover { color: var(--poli-primary); }
+    }
+}
+
+// Activity navigation below lessons/quizzes/resources.
+.activity-navigation,
+.prev-next-activity,
+.activity-navigation .row {
+    border-color: var(--poli-border);
+
+    a {
+        border-radius: 0.85rem;
+        color: var(--bs-body-color);
+    }
+
+    a:hover {
+        color: var(--poli-primary);
+        background: rgba(var(--poli-primary-rgb), 0.08);
+    }
+}
+
+// Icons and icon-only buttons: brand on hover, muted at rest.
+.btn-icon,
+.action-icon,
+.iconsmall,
+.icon {
+    color: inherit;
+}
+
+.btn-icon,
+.action-icon {
+    border-radius: 0.75rem;
+
+    &:hover,
+    &:focus-visible {
+        color: var(--poli-primary) !important;
+        background: rgba(var(--poli-primary-rgb), 0.1) !important;
+    }
+}
+
+// Empty states and callouts should feel intentional, not like missing content.
+.nothingtodisplay,
+.empty-placeholder-image-sm,
+.block .content.empty,
+.box.py-3.generalbox,
+.continuebutton {
+    color: var(--poli-text-muted);
+}
+
+.continuebutton,
+.urlworkaround,
+.resourcecontent,
+.book_content,
+.wiki_content,
+.imscp_content {
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    border-radius: var(--poli-radius-xl);
+    box-shadow: var(--poli-shadow-sm);
+}
+
+// Progress bars and grade/course completion accents.
+.progress {
+    background: rgba(#fff, 0.08);
+    border-radius: 50rem;
+}
+
+.progress-bar,
+.progress-bar-striped {
+    background: var(--poli-gradient);
+}
+
+.gradeitem,
+.grade-report-grader,
+.gradereport-grader-table {
+    color: var(--bs-body-color);
 }
 
 // Respect reduced motion.
@@ -2444,7 +3811,6 @@ body.pagelayout-coursecategory .poli-container .poli-section .poli-container {
     .poli-category-card,
     .poli-course-card,
     .poli-course-media img,
-    .poli-theme-toggle,
     .poli-catpage .coursebox,
     .poli-stat,
     .course-content .activity-item,

@@ -16,8 +16,8 @@
 
 /**
  * Poli drawers layout — Boost's drawer layout plus the shared navbar context
- * (auth buttons + light/dark logos) so every internal/admin page renders the
- * Poli navbar correctly.
+ * (auth buttons + dark-only logo) so every internal/admin page renders the Poli
+ * navbar correctly.
  *
  * @package   theme_poli
  * @copyright 2026 Poliedro

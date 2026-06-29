@@ -17,8 +17,8 @@
 {{!
     @template theme_boost/navbar
 
-    Poli override of the top navbar. Identical structure to Boost with an added
-    light/dark colour scheme toggle.
+    Poli override of the top navbar. Identical structure to Boost with
+    dark-only brand polish.
 }}
 <nav class="navbar fixed-top bg-body navbar-expand" aria-label="{{#str}}sitemenubar, admin{{/str}}">
     <div class="container-fluid">
@@ -29,8 +29,7 @@
 
         <a href="{{{ config.homeurl }}}" class="navbar-brand d-none d-md-flex align-items-center m-0 me-4 p-0 aabtn">
             {{#haslogo}}
-                <img src="{{ logolight }}" class="logo poli-logo poli-logo-light" alt="{{ sitename }}">
-                <img src="{{ logodark }}" class="logo poli-logo poli-logo-dark" alt="{{ sitename }}">
+                <img src="{{ logodark }}" class="logo poli-logo" alt="{{ sitename }}">
             {{/haslogo}}
             {{^haslogo}}
                 {{# output.should_display_navbar_logo }}
@@ -58,14 +57,6 @@
                 {{{ output.search_box }}}
                 <div class="divider border-start h-75 align-self-center mx-1"></div>
             {{/output.search_box}}
-
-            <button type="button" class="poli-theme-toggle mx-1" data-poli-toggle
-                    aria-label="{{#str}}togglecolorscheme, theme_poli{{/str}}"
-                    title="{{#str}}togglecolorscheme, theme_poli{{/str}}" aria-pressed="false">
-                <i class="poli-icon-dark fa fa-moon" aria-hidden="true"></i>
-                <i class="poli-icon-light fa fa-sun" aria-hidden="true"></i>
-            </button>
-            <div class="divider border-start h-75 align-self-center mx-1"></div>
 
             {{#langmenu}}
                 {{> theme_boost/language_menu }}

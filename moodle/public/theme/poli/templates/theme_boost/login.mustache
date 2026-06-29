@@ -18,7 +18,7 @@
     @template theme_boost/login
 
     Poli override of the login-flow page (login, signup, forgot password, MFA).
-    Adds a floating colour-scheme toggle since the login layout has no navbar.
+    Dark-only split layout.
 }}
 {{> theme_boost/head }}
 
@@ -28,13 +28,6 @@
 <div id="page-wrapper" class="poli-login-wrapper">
 
     {{{ output.standard_top_of_body_html }}}
-
-    <button type="button" class="poli-theme-toggle poli-login-toggle" data-poli-toggle
-            aria-label="{{#str}}togglecolorscheme, theme_poli{{/str}}"
-            title="{{#str}}togglecolorscheme, theme_poli{{/str}}" aria-pressed="false">
-        <i class="poli-icon-dark fa fa-moon" aria-hidden="true"></i>
-        <i class="poli-icon-light fa fa-sun" aria-hidden="true"></i>
-    </button>
 
     <div id="page" class="mt-0 poli-login-page">
         {{> core/login_layout }}

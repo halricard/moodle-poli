@@ -85,16 +85,7 @@ if ($ADMIN->fulltree) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $page->add($setting);
 
-    // Logo for light mode.
-    $name = 'theme_poli/logolight';
-    $title = get_string('logolight', 'theme_poli');
-    $description = get_string('logolight_desc', 'theme_poli');
-    $setting = new admin_setting_configstoredfile($name, $title, $description, 'logolight', 0,
-        ['maxfiles' => 1, 'accepted_types' => ['.png', '.jpg', '.jpeg', '.svg', '.webp', '.gif']]);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $page->add($setting);
-
-    // Logo for dark mode.
+    // Dark-only logo.
     $name = 'theme_poli/logodark';
     $title = get_string('logodark', 'theme_poli');
     $description = get_string('logodark_desc', 'theme_poli');

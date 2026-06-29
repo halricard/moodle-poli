@@ -134,6 +134,7 @@ function theme_poli_get_extra_scss($theme) {
 
     // Configurable navbar accent / fill (settings-driven CSS).
     $content .= theme_poli_navbar_style_css($theme);
+    $content .= theme_poli_enrol_category_badge_css();
 
     // Admin-defined raw post SCSS.
     if (!empty($theme->settings->scss)) {
@@ -141,6 +142,48 @@ function theme_poli_get_extra_scss($theme) {
     }
 
     return $content;
+}
+
+/**
+ * Build category badge labels for the enrolment landing page.
+ *
+ * Moodle exposes the current course category as body.category-{id}; generated
+ * CSS lets the core enrol page show the same category chip as the course hero.
+ *
+ * @return string CSS
+ */
+function theme_poli_enrol_category_badge_css(): string {
+    global $DB;
+
+    try {
+        $categories = $DB->get_records('course_categories', null, 'id ASC', 'id,name');
+    } catch (\Throwable $e) {
+        return '';
+    }
+
+    $css = '';
+    foreach ($categories as $category) {
+        $name = trim(strip_tags(format_string($category->name, true,
+            ['context' => context_coursecat::instance($category->id)])));
+        if ($name === '') {
+            continue;
+        }
+        $label = \core_text::strtoupper($name);
+        $css .= 'body.path-enrol.category-' . (int) $category->id . ' .coursebox .info::before{';
+        $css .= 'content:' . theme_poli_css_string($label) . ';}';
+    }
+
+    return $css;
+}
+
+/**
+ * Escapes a value for a CSS string literal.
+ *
+ * @param string $value
+ * @return string
+ */
+function theme_poli_css_string(string $value): string {
+    return '"' . addcslashes($value, "\\\"\n\r\f") . '"';
 }
 
 /**
@@ -180,8 +223,7 @@ function theme_poli_navbar_style_css($theme): string {
             $css .= '.navbar.fixed-top .primary-navigation .nav-link:hover{color:#fff !important;background:rgba(255,255,255,.16) !important;}';
             $css .= '.navbar.fixed-top .primary-navigation .nav-link.active{color:#fff !important;}';
             $css .= '.navbar.fixed-top .primary-navigation .nav-link.active::after{background:#fff !important;}';
-            $css .= '.navbar.fixed-top .poli-theme-toggle,.navbar.fixed-top .btn-icon,.navbar.fixed-top .nav-link,.navbar.fixed-top a{color:#fff !important;}';
-            $css .= '.navbar.fixed-top .poli-theme-toggle{border-color:rgba(255,255,255,.4) !important;}';
+            $css .= '.navbar.fixed-top .btn-icon,.navbar.fixed-top .nav-link,.navbar.fixed-top a{color:#fff !important;}';
             $css .= '.navbar.fixed-top .divider{border-color:rgba(255,255,255,.3) !important;}';
             break;
         case 'accent-gradient':
@@ -216,7 +258,7 @@ function theme_poli_get_precompiled_css() {
  * @return bool
  */
 function theme_poli_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    $allowed = ['logo', 'logolight', 'logodark', 'backgroundimage', 'herobackgroundimage', 'loginbackgroundimage', 'preset'];
+    $allowed = ['logo', 'logodark', 'backgroundimage', 'herobackgroundimage', 'loginbackgroundimage', 'preset'];
     if ($context->contextlevel == CONTEXT_SYSTEM && in_array($filearea, $allowed, true)) {
         $theme = theme_config::load('poli');
         if (!array_key_exists('cacheability', $options)) {
@@ -271,7 +313,7 @@ function theme_poli_auth_context(): array {
 }
 
 /**
- * Navbar context: auth flags plus the configurable light/dark logos.
+ * Navbar context: auth flags plus the configurable dark-only logo.
  *
  * @return array
  */
@@ -279,13 +321,10 @@ function theme_poli_navbar_context(): array {
     $ctx = theme_poli_auth_context();
 
     $theme = theme_config::load('poli');
-    $light = $theme->setting_file_url('logolight', 'logolight');
     $dark = $theme->setting_file_url('logodark', 'logodark');
 
-    $ctx['haslogo'] = !empty($light) || !empty($dark);
-    // Fall back to whichever logo is set when only one is provided.
-    $ctx['logolight'] = $light ?: $dark;
-    $ctx['logodark'] = $dark ?: $light;
+    $ctx['haslogo'] = !empty($dark);
+    $ctx['logodark'] = $dark;
 
     return $ctx;
 }
