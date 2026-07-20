@@ -148,9 +148,16 @@ a:active {
     text-decoration: underline;
 }
 
-// Visited accent is for content links only — never navigation. Menus, list
-// items and nav links must not flip to magenta just because they're in history.
-a:visited:not(.btn):not(.poli-langtoggle-seg):not(.dropdown-item):not(.nav-link):not(.list-group-item):not([role="menuitem"]) {
+// Visited-accent (magenta) is an "already read" affordance that only makes
+// sense inside user-authored prose. Scoping it to Moodle's content wrappers —
+// instead of a global `a:visited` with an ever-growing :not() blocklist — keeps
+// the whole site chrome (nav, menus, footer, breadcrumbs, blocks, cards) free
+// of stray magenta. Outside these wrappers, visited links keep the normal link
+// colour (see the base `a` rule and its `&:visited`).
+.no-overflow a:visited,
+.text_to_html a:visited,
+.activity-description a:visited,
+[data-region="post-content"] a:visited {
     color: var(--poli-accent);
 }
 
@@ -331,7 +338,7 @@ body.pagelayout-coursecategory .poli-catpage {
 }
 
 .navbar .navbar-brand img.logo {
-    max-height: 34px;
+    max-height: 26px;
     width: auto;
 }
 
@@ -1720,7 +1727,12 @@ a:focus-visible,
     .container-fluid {
         min-height: 60px;
         gap: 0.25rem;
-        padding-inline: clamp(0.75rem, 2vw, 1.25rem);
+        // Align the navbar content with the marketing container (.poli-container)
+        // — same max-width + padding — so it no longer hugs the screen edges and
+        // lines up with the hero instead.
+        max-width: 1280px;
+        margin-inline: auto;
+        padding-inline: clamp(1rem, 4vw, 2rem);
     }
 
     .navbar-brand {
@@ -5273,6 +5285,20 @@ body.editing .poli-footer .poli-footer-support,
 body.editing .poli-footer .poli-footer-support a {
     background: transparent !important;
     background-color: transparent !important;
+}
+
+// Uniform footer link colour. The global `a` and `a:visited` rules (with their
+// stack of :not() exclusions) out-specify the footer's own colour, so links
+// showed teal when unvisited and magenta once in history. Force one calm colour
+// for every state, brand teal only on hover.
+.poli-footer a,
+.poli-footer a:visited {
+    color: var(--bs-body-color) !important;
+}
+
+.poli-footer a:hover,
+.poli-footer a:focus-visible {
+    color: var(--poli-primary) !important;
 }
 
 // =============================================================================
