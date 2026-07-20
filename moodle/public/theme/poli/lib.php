@@ -333,6 +333,52 @@ function theme_poli_navbar_context(): array {
 }
 
 /**
+ * Minimalist language toggle for the navbar.
+ *
+ * Core only exposes the language picker to logged-OUT users (see
+ * \core\navigation\output\primary::export_for_template, which returns an empty
+ * 'lang' array once isloggedin()). We rebuild it here so the toggle shows for
+ * everyone, and expose a short code (PT, EN) per language for a compact pill.
+ *
+ * Honours the same guards as \core\output\language_menu: the langmenu setting,
+ * a course-forced language, and needing at least two installed translations.
+ * Returns [] when the toggle should not render (falsy → hidden in the template).
+ *
+ * @return array
+ */
+function theme_poli_langtoggle_context(): array {
+    global $CFG, $PAGE;
+
+    if (empty($CFG->langmenu)) {
+        return [];
+    }
+    if ($PAGE->course && $PAGE->course->id != SITEID && !empty($PAGE->course->lang)) {
+        // Language forced at course level — no switching.
+        return [];
+    }
+
+    $langs = get_string_manager()->get_list_of_translations();
+    if (count($langs) < 2) {
+        return [];
+    }
+
+    $current = current_language();
+    $items = [];
+    foreach ($langs as $code => $name) {
+        $isactive = ($code === $current);
+        $items[] = [
+            // pt_br → PT, en → EN. Two-letter primary subtag, uppercased.
+            'code' => \core_text::strtoupper(substr(explode('_', $code)[0], 0, 2)),
+            'label' => $name,
+            'isactive' => $isactive,
+            'url' => $isactive ? '#' : (new \core\url($PAGE->url, ['lang' => $code]))->out(false),
+        ];
+    }
+
+    return ['items' => $items];
+}
+
+/**
  * Returns the core admin logo URL used by Moodle's Appearance > Logos page.
  *
  * @param string $filearea Either logo or logocompact.

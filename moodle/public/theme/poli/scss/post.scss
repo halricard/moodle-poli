@@ -148,7 +148,9 @@ a:active {
     text-decoration: underline;
 }
 
-a:visited:not(.btn) {
+// Visited accent is for content links only — never navigation. Menus, list
+// items and nav links must not flip to magenta just because they're in history.
+a:visited:not(.btn):not(.poli-langtoggle-seg):not(.dropdown-item):not(.nav-link):not(.list-group-item):not([role="menuitem"]) {
     color: var(--poli-accent);
 }
 
@@ -2116,6 +2118,50 @@ body.pagelayout-login .login-container .form-control {
     --bs-btn-hover-color: #fff;
 }
 
+// Minimalist language toggle (PT | EN) — segmented pill, both auth states.
+.poli-langtoggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 50rem;
+    background: var(--poli-surface-muted);
+    border: 1px solid var(--poli-border);
+}
+
+.poli-langtoggle-seg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 50rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    // Discreet muted white — a low-opacity variant of the body text, so the
+    // inactive side recedes without picking up the brand link colours.
+    color: rgba(228, 230, 237, 0.5);
+    text-decoration: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+        color: var(--bs-body-color);
+        text-decoration: none;
+    }
+
+    &.is-active {
+        // Dark ink on the light teal fill — #fff on #1FB4C3 is ~2:1 and vanishes
+        // at this size. Near-black gives strong contrast and matches the brand.
+        color: #0b1418;
+        background: var(--poli-primary);
+        cursor: default;
+        pointer-events: none;
+    }
+}
+
 // =============================================================================
 // Branded footer.
 // =============================================================================
@@ -2642,6 +2688,21 @@ a.list-group-item-action:hover,
         color: var(--bs-body-color) !important;
     }
 
+    // The highlight class (.active for cm, .pageitem for section) sits on the
+    // item, not the <a>. So the link still matches the generic ":not(.active)"
+    // hover above and gets a dark surface fill that hides its text on the item's
+    // teal background. Keep the link transparent + dark text on hover so the
+    // active look holds. Not scoped to edit mode — the dark fill appears in both.
+    .courseindex-item.active .courseindex-link:hover,
+    .courseindex-item.active .courseindex-link:hover *,
+    .courseindex-item.pageitem .courseindex-link:hover,
+    .courseindex-item.pageitem .courseindex-link:hover *,
+    [aria-current="true"] .courseindex-link:hover,
+    [aria-current="true"] .courseindex-link:hover * {
+        background-color: transparent !important;
+        color: #031317 !important;
+    }
+
     .courseindex-item.active,
     .courseindex-item.pageitem,
     .courseindex-link.active,
@@ -2775,6 +2836,95 @@ a.list-group-item-action:hover,
     [aria-current="true"] .courseindex-chevron {
         color: #031317 !important;
         background: transparent !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Course index loading skeleton.
+// Core `.bg-pulse-grey` just fades a light-grey background in/out — on the dark
+// theme that reads as flat pale bars. Replace it with a modern shimmer: a soft
+// base block with a highlight sweeping across, rounded bars at organic widths.
+// -----------------------------------------------------------------------------
+#course-index-placeholder {
+    padding-block: 0.35rem;
+
+    .placeholders {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        // Align the skeleton rows with the real course-index items' indent.
+        padding-inline: 1rem !important;
+        margin: 0;
+
+        li {
+            margin: 0;
+
+            > .d-flex {
+                gap: 0.6rem;
+            }
+        }
+    }
+
+    .bg-pulse-grey {
+        position: relative;
+        overflow: hidden;
+        // Kill the core light-grey pulse; use a subtle raised block instead.
+        animation: none !important;
+        background-color: rgba(255, 255, 255, 0.055) !important;
+        border-radius: 0.5rem;
+
+        // The travelling highlight.
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(var(--poli-primary-rgb), 0.12) 45%,
+                rgba(255, 255, 255, 0.14) 50%,
+                rgba(var(--poli-primary-rgb), 0.12) 55%,
+                transparent 100%
+            );
+            animation: poli-skeleton-shimmer 1.5s ease-in-out infinite;
+        }
+    }
+
+    // The leading bullet — echoes the real item dots.
+    .bg-pulse-grey.rounded-circle {
+        flex: 0 0 auto;
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 50%;
+    }
+
+    // The label bar.
+    .d-flex > .bg-pulse-grey.w-100 {
+        height: 0.72rem;
+    }
+
+    // Organic, uneven line lengths so it reads like real content loading.
+    li:nth-child(1) .bg-pulse-grey.w-100 { max-width: 80%; }
+    li:nth-child(2) .bg-pulse-grey.w-100 { max-width: 62%; }
+    li:nth-child(3) .bg-pulse-grey.w-100 { max-width: 88%; }
+    li:nth-child(4) .bg-pulse-grey.w-100 { max-width: 70%; }
+
+    // Stagger each row's shimmer for a cascading feel.
+    li:nth-child(2) .bg-pulse-grey::after { animation-delay: 0.12s; }
+    li:nth-child(3) .bg-pulse-grey::after { animation-delay: 0.24s; }
+    li:nth-child(4) .bg-pulse-grey::after { animation-delay: 0.36s; }
+}
+
+@keyframes poli-skeleton-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #course-index-placeholder .bg-pulse-grey::after {
+        animation: none;
     }
 }
 
@@ -4092,7 +4242,7 @@ h3[id^="forum_overview_title"] .activityiconcontainer {
 // =============================================================================
 
 // Links: no default purple visited state, no washed-out hover on dark.
-a:not(.btn):not(.dropdown-item):not(.nav-link):not(.page-link) {
+a:not(.btn):not(.dropdown-item):not(.nav-link):not(.page-link):not(.poli-langtoggle-seg) {
     color: var(--poli-primary);
     text-underline-offset: 0.18em;
     text-decoration-thickness: 0.08em;
