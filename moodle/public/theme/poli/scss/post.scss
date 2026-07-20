@@ -148,18 +148,11 @@ a:active {
     text-decoration: underline;
 }
 
-// Visited-accent (magenta) is an "already read" affordance that only makes
-// sense inside user-authored prose. Scoping it to Moodle's content wrappers —
-// instead of a global `a:visited` with an ever-growing :not() blocklist — keeps
-// the whole site chrome (nav, menus, footer, breadcrumbs, blocks, cards) free
-// of stray magenta. Outside these wrappers, visited links keep the normal link
-// colour (see the base `a` rule and its `&:visited`).
-.no-overflow a:visited,
-.text_to_html a:visited,
-.activity-description a:visited,
-[data-region="post-content"] a:visited {
-    color: var(--poli-accent);
-}
+// Visited links keep the normal link colour (teal) everywhere — see the base
+// `a` rule and its `&:visited`. The old magenta "already read" accent was more
+// trouble than value: even scoped to content wrappers it leaked onto action
+// links that live inside posts/prose (forum "Link direto", Edit, Delete…), so
+// it's dropped entirely. Reintroduce as a tasteful affordance later if wanted.
 
 ::selection {
     background: rgba(var(--poli-accent-rgb), 0.25);
@@ -3231,6 +3224,122 @@ a.list-group-item-action:hover,
 
     .popover-region-footer-container {
         border-top: 1px solid var(--poli-border);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Notifications popover — refined item layout, unread affordance, tidy chrome.
+// -----------------------------------------------------------------------------
+.popover-region-notifications {
+    // Inset the list so hovered/rounded items breathe inside the panel.
+    .popover-region-content-container {
+        padding: 0.3rem;
+    }
+
+    .content-item-container.notification {
+        position: relative;
+        border-radius: 0.85rem;
+        margin: 0.1rem 0;
+        border: 0;
+        transition: background-color 0.15s ease;
+
+        // The clickable body (anchor when there's a context URL, div otherwise).
+        .context-link,
+        > div[tabindex] {
+            display: block;
+            padding: 0.7rem 0.9rem 0.7rem 1.5rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        &:hover { background: var(--poli-surface-muted) !important; }
+
+        .notification-message {
+            font-weight: 600;
+            line-height: 1.35;
+            margin-bottom: 0.35rem;
+            color: var(--bs-body-color);
+        }
+
+        .content-item-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .timestamp {
+            font-size: 0.72rem;
+            color: var(--poli-text-muted);
+        }
+
+        .view-more {
+            display: inline-block;
+            margin-top: 0.15rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--poli-primary) !important;
+        }
+
+        // Unread: brand tint + a glowing dot on the left rail + bolder title.
+        &.unread {
+            background: rgba(var(--poli-primary-rgb), 0.07);
+
+            &::before {
+                content: "";
+                position: absolute;
+                left: 0.6rem;
+                top: 1.05rem;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--poli-primary);
+                box-shadow: 0 0 8px -1px var(--poli-primary);
+            }
+
+            .notification-message { font-weight: 700; }
+
+            &:hover { background: rgba(var(--poli-primary-rgb), 0.11) !important; }
+        }
+    }
+
+    // Header action icons (mark-all-read, settings, close) → tidy round buttons.
+    .popover-region-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.15rem;
+
+        a,
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            transition: background-color 0.15s ease, color 0.15s ease;
+
+            &:hover,
+            &:focus-visible {
+                background: var(--poli-surface-muted);
+                color: var(--poli-primary) !important;
+            }
+        }
+    }
+
+    // Footer "See all" → full-width, button-like, centred.
+    .popover-region-footer-container {
+        padding: 0.4rem;
+
+        a {
+            display: block;
+            padding: 0.6rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            transition: background-color 0.15s ease;
+
+            &:hover { background: var(--poli-surface-muted); }
+        }
     }
 }
 
