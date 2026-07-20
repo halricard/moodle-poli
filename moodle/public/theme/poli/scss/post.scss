@@ -3343,6 +3343,152 @@ a.list-group-item-action:hover,
     }
 }
 
+// -----------------------------------------------------------------------------
+// Full notifications PAGE (message/output/popup/notifications.php) — the two
+// pane list + detail view. Untheméd by Boost, so it showed a raw blue selection
+// and washed-out read rows. Give it a proper card + brand selection.
+// -----------------------------------------------------------------------------
+.notification-area {
+    display: flex;
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    border-radius: var(--poli-radius-xl);
+    box-shadow: var(--poli-shadow-sm);
+    overflow: hidden;
+    min-height: 60vh;
+    margin-top: 1rem;
+
+    .control-area {
+        flex: 0 0 340px;
+        max-width: 340px;
+        border-right: 1px solid var(--poli-border);
+        background: var(--poli-surface-muted);
+        overflow-y: auto;
+    }
+
+    .content-area {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    // Core paints these list containers (and the rows) white — force the dark
+    // pane so read rows don't sit on a white block.
+    .control-area .content,
+    [data-region="content"],
+    .all-notifications,
+    .content-item-container,
+    .content-item-container.notification {
+        background-color: var(--poli-surface-muted) !important;
+    }
+
+    // ---- Left list rows ----
+    .content-item-container.notification {
+        position: relative;
+        border-bottom: 1px solid var(--poli-border);
+        border-radius: 0;
+        margin: 0;
+        transition: background-color 0.15s ease;
+
+        .context-link,
+        > div[tabindex] {
+            display: block;
+            padding: 0.85rem 1rem 0.85rem 1.6rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .notification-message {
+            font-weight: 600;
+            line-height: 1.35;
+            margin-bottom: 0.3rem;
+            color: var(--bs-body-color);
+        }
+
+        .timestamp {
+            font-size: 0.72rem;
+            color: var(--poli-text-muted);
+        }
+
+        &:hover { background: var(--poli-surface) !important; }
+
+        // Read rows stay legible (core dims them into near-invisibility).
+        &.read {
+            opacity: 1;
+            .notification-message { color: var(--poli-text-muted); font-weight: 600; }
+        }
+
+        // Unread: glowing brand dot on the rail + bolder title.
+        &.unread {
+            &::before {
+                content: "";
+                position: absolute;
+                left: 0.65rem;
+                top: 1.15rem;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--poli-primary);
+                box-shadow: 0 0 8px -1px var(--poli-primary);
+            }
+            .notification-message { font-weight: 700; }
+        }
+
+        // Selected row — was raw core blue; make it brand teal with a left rail.
+        &.selected {
+            background: rgba(var(--poli-primary-rgb), 0.14) !important;
+            box-shadow: inset 3px 0 0 var(--poli-primary);
+
+            .notification-message,
+            .timestamp { color: var(--bs-body-color) !important; }
+        }
+    }
+
+    // ---- Right detail pane ----
+    .content-area {
+        .toggle-mode { padding: 0.5rem 0.75rem 0; }
+
+        [data-region="header"],
+        > .header {
+            padding: 1.1rem 1.4rem;
+            border-bottom: 1px solid var(--poli-border);
+            font-weight: 700;
+            color: var(--bs-body-color);
+        }
+
+        [data-region="content"],
+        > .content {
+            padding: 1.4rem;
+            color: var(--bs-body-color);
+            line-height: 1.6;
+        }
+
+        .footer,
+        [data-region="footer"] { padding: 0 1.4rem 1.4rem; }
+
+        a { color: var(--poli-primary); }
+    }
+
+    .empty-text {
+        padding: 2rem 1.4rem;
+        color: var(--poli-text-muted);
+        text-align: center;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .notification-area {
+        flex-direction: column;
+        min-height: 0;
+
+        .control-area {
+            flex-basis: auto;
+            max-width: none;
+            border-right: 0;
+            border-bottom: 1px solid var(--poli-border);
+        }
+    }
+}
+
 // Notifications + messaging drawer: Boost injects many literal light panels.
 .popover-region-notifications,
 [data-region="popover-region-messages"],
