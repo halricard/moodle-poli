@@ -55,6 +55,69 @@
     --bs-card-cap-bg: #1c2029;
     --bs-heading-color: #f4f5f8;
     color-scheme: dark;
+
+    // Scrollbar — thin, dark, on-brand track/thumb (replaces the raw native bar).
+    --poli-scrollbar-thumb: rgba(255, 255, 255, 0.18);
+    --poli-scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
+    --poli-scrollbar-track: transparent;
+}
+
+// -----------------------------------------------------------------------------
+// Scrollbars.
+// Native scrollbars default to a light OS chrome even with color-scheme: dark
+// set above, so every scroll container gets an explicit thin, dark,
+// low-contrast bar instead of the raw browser default.
+//
+// Boost's core `thin-scrolls` mixin (scss/moodle/{drawer,layout,tables,
+// reportbuilder,process-monitor}.scss) already hardcodes a LIGHT scrollbar
+// directly on selectors like `.drawercontent` and `#page.drawers` (the course
+// index / blocks drawer). A bare `*` selector can never win against those
+// class/id selectors on specificity alone, so those exact selectors are
+// re-declared here (source order then settles the tie in our favour).
+// -----------------------------------------------------------------------------
+@mixin poli-thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--poli-scrollbar-thumb) var(--poli-scrollbar-track);
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--poli-scrollbar-track);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--poli-scrollbar-thumb);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: var(--poli-scrollbar-thumb-hover);
+    }
+
+    &::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+}
+
+* {
+    @include poli-thin-scrollbar;
+}
+
+// Boost's own hard-coded light thin-scrolls() call sites — re-styled to match.
+.drawercontent,
+#page.drawers,
+.table-responsive,
+.reportbuilder-filters-sidebar,
+.reportbuilder-sidebar-menu-cards,
+.reportbuilder-sidebar-settings,
+.reportbuilder-report-container,
+.popover-process-monitor .process-list {
+    @include poli-thin-scrollbar;
 }
 
 // -----------------------------------------------------------------------------
