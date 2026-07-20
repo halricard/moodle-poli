@@ -691,13 +691,18 @@ function theme_poli_dashboard_continue(array $mycourses) {
         $ctx = context_course::instance($course->id);
         $image = theme_poli_course_image($course);
         $pct = \core_completion\progress::get_course_progress_percentage($course);
+        $next = theme_poli_course_next_activity($course);
 
         return array_merge($image, [
             'fullname' => format_string($course->fullname, true, ['context' => $ctx]),
-            'url' => theme_poli_course_resume_url($course)
+            'url' => $next['url']
                 ?? (new \core\url('/course/view.php', ['id' => $course->id]))->out(false),
             'hasprogress' => $pct !== null,
             'progress' => $pct !== null ? (int) round($pct) : 0,
+            // The specific activity to resume — the real "what do I do now?".
+            'hasnext' => !empty($next),
+            'nextname' => $next['name'] ?? null,
+            'nexttype' => $next['modfullname'] ?? null,
         ]);
     } catch (\Throwable $e) {
         return false;
@@ -705,17 +710,120 @@ function theme_poli_dashboard_continue(array $mycourses) {
 }
 
 /**
- * Resolve a "resume" deep-link for a course: the first activity the user has
- * not yet completed (or simply the first visible activity when completion is
- * off). Lets the course hero / dashboard jump straight into the next lesson
- * instead of dumping the learner on the course index.
+ * Build the dashboard "Upcoming deadlines" list: the learner's actionable due
+ * dates (assignments, quizzes, …) across their courses, colour-coded by
+ * urgency so a looming deadline is impossible to miss.
+ *
+ * Uses the same calendar action-events API as the core Timeline block, so it
+ * respects course visibility, group/user overrides and completion.
+ *
+ * @param int $limit Max rows to return.
+ * @return array List of deadline rows (may be empty).
+ */
+function theme_poli_dashboard_deadlines(int $limit = 5): array {
+    global $CFG;
+
+    if (!isloggedin() || isguestuser()) {
+        return [];
+    }
+
+    require_once($CFG->dirroot . '/calendar/lib.php');
+
+    $now = time();
+    // Look back a fortnight (surface recently-missed work in red) and ahead a
+    // month. Over-fetch, then trim after formatting.
+    $from = $now - 14 * DAYSECS;
+    $to = $now + 30 * DAYSECS;
+
+    try {
+        $events = \core_calendar\local\api::get_action_events_by_timesort(
+            $from, $to, null, $limit + 10, true
+        );
+    } catch (\Throwable $e) {
+        return [];
+    }
+
+    $rows = [];
+    foreach ($events as $event) {
+        try {
+            $action = $event->get_action();
+            if (!$action) {
+                continue;
+            }
+            $due = $event->get_times()->get_sort_time()->getTimestamp();
+            $diff = $due - $now;
+
+            // Urgency buckets drive the colour in the template.
+            if ($diff < 0) {
+                $urgency = 'overdue';
+            } else if ($diff < DAYSECS) {
+                $urgency = 'urgent';
+            } else if ($diff < 3 * DAYSECS) {
+                $urgency = 'soon';
+            } else {
+                $urgency = 'ok';
+            }
+
+            // Compact relative label.
+            if ($diff < 0) {
+                $rel = get_string('deadlineoverdue', 'theme_poli');
+            } else if ($diff < HOURSECS) {
+                $rel = get_string('deadlineinmins', 'theme_poli', max(1, (int) round($diff / MINSECS)));
+            } else if ($diff < DAYSECS) {
+                $rel = get_string('deadlineinhours', 'theme_poli', (int) floor($diff / HOURSECS));
+            } else if ($diff < 7 * DAYSECS) {
+                $rel = get_string('deadlineindays', 'theme_poli', (int) floor($diff / DAYSECS));
+            } else {
+                $rel = userdate($due, get_string('strftimedateshort', 'langconfig'));
+            }
+
+            $coursename = '';
+            if ($event->get_course()) {
+                $coursename = format_string($event->get_course()->get('fullname'));
+            }
+
+            // Prefer the activity's own name over the verbose event name
+            // ("… is due" / "… está marcado para esta data").
+            $name = $event->get_name();
+            if ($cm = $event->get_course_module()) {
+                $cmname = $cm->get('name');
+                if (!empty($cmname)) {
+                    $name = format_string($cmname);
+                }
+            }
+
+            $rows[] = [
+                'name' => $name,
+                'coursename' => $coursename,
+                'url' => $action->get_url()->out(false),
+                'time' => userdate($due, get_string('strftimedatetimeshort', 'langconfig')),
+                'relative' => $rel,
+                'urgency' => $urgency,
+                'urgent' => $urgency === 'urgent' || $urgency === 'overdue',
+            ];
+            if (count($rows) >= $limit) {
+                break;
+            }
+        } catch (\Throwable $e) {
+            continue;
+        }
+    }
+
+    return $rows;
+}
+
+/**
+ * Resolve the course's "next" activity for the learner: the first activity they
+ * have not yet completed (or simply the first visible activity when completion
+ * is off). Lets the course hero / dashboard jump straight into the next lesson
+ * instead of dumping the learner on the course index, and surface WHAT it is.
  *
  * Uses the request-cached modinfo, so it adds no extra queries per pageload.
  *
  * @param stdClass $course
- * @return string|null Absolute activity URL, or null when nothing is resumable.
+ * @return array|null ['url', 'name', 'modname', 'modfullname'] or null.
  */
-function theme_poli_course_resume_url($course): ?string {
+function theme_poli_course_next_activity($course): ?array {
     global $USER;
 
     try {
@@ -727,18 +835,20 @@ function theme_poli_course_resume_url($course): ?string {
     $completion = new \completion_info($course);
     $usecompletion = $completion->is_enabled();
 
-    $firsturl = null;
+    $first = null;
     foreach ($modinfo->get_cms() as $cm) {
         // Only real, viewable, user-visible activities with their own page.
-        if (!$cm->uservisible || !$cm->has_view() || $cm->deletioninprogress) {
+        if (!$cm->uservisible || !$cm->has_view() || $cm->deletioninprogress || !$cm->url) {
             continue;
         }
-        $url = $cm->url ? $cm->url->out(false) : null;
-        if ($url === null) {
-            continue;
-        }
-        if ($firsturl === null) {
-            $firsturl = $url;
+        $entry = [
+            'url' => $cm->url->out(false),
+            'name' => $cm->get_formatted_name(),
+            'modname' => $cm->modname,
+            'modfullname' => get_string('modulename', $cm->modname),
+        ];
+        if ($first === null) {
+            $first = $entry;
         }
         if (!$usecompletion || $cm->completion == COMPLETION_TRACKING_NONE) {
             continue;
@@ -746,12 +856,24 @@ function theme_poli_course_resume_url($course): ?string {
         $data = $completion->get_data($cm, false, $USER->id);
         if ((int) $data->completionstate === COMPLETION_INCOMPLETE) {
             // First not-yet-completed tracked activity: resume here.
-            return $url;
+            return $entry;
         }
     }
 
     // Everything complete (or no completion): fall back to the first activity.
-    return $firsturl;
+    return $first;
+}
+
+/**
+ * Resolve a "resume" deep-link (URL only) for a course. Thin wrapper around
+ * theme_poli_course_next_activity for callers that just need the link.
+ *
+ * @param stdClass $course
+ * @return string|null Absolute activity URL, or null when nothing is resumable.
+ */
+function theme_poli_course_resume_url($course): ?string {
+    $next = theme_poli_course_next_activity($course);
+    return $next['url'] ?? null;
 }
 
 /**

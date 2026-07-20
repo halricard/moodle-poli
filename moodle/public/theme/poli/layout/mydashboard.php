@@ -103,6 +103,9 @@ foreach ($mycourses as $c) {
 // not in the layout include scope).
 $continue = theme_poli_dashboard_continue($mycourses);
 
+// Colour-coded upcoming deadlines (assignments, quizzes, …) by urgency.
+$deadlines = theme_poli_dashboard_deadlines(5);
+
 $welcome = [
     'greeting' => $greeting,
     'firstname' => format_string($USER->firstname),
@@ -117,6 +120,8 @@ $welcome = [
     'completedurl' => (new \core\url('/my/courses.php', ['grouping' => 'past']))->out(false),
     'continue' => $continue,
     'hascontinue' => (bool) $continue,
+    'deadlines' => $deadlines,
+    'hasdeadlines' => !empty($deadlines),
 ];
 
 $templatecontext = [

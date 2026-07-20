@@ -56,7 +56,13 @@
         </span>
         <span class="poli-continue-body">
             <span class="poli-continue-eyebrow"><i class="fa fa-play" aria-hidden="true"></i> {{#str}} continuewhereleft, theme_poli {{/str}}</span>
-            <span class="poli-continue-title">{{ continue.fullname }}</span>
+            {{#continue.hasnext}}
+                <span class="poli-continue-title">{{ continue.nextname }}</span>
+                <span class="poli-continue-course"><i class="fa fa-book-open" aria-hidden="true"></i> {{ continue.nexttype }} · {{ continue.fullname }}</span>
+            {{/continue.hasnext}}
+            {{^continue.hasnext}}
+                <span class="poli-continue-title">{{ continue.fullname }}</span>
+            {{/continue.hasnext}}
             {{#continue.hasprogress}}
                 <span class="poli-continue-progress">
                     <span class="progress" role="progressbar" aria-valuenow="{{ continue.progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{#str}} courseprogress, theme_poli {{/str}}">
@@ -66,6 +72,33 @@
                 </span>
             {{/continue.hasprogress}}
         </span>
-        <span class="poli-continue-cta" aria-hidden="true"><i class="fa fa-arrow-right"></i></span>
+        <span class="poli-continue-cta">
+            <span class="poli-continue-cta-label">{{#str}} resume, theme_poli {{/str}}</span>
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </span>
     </a>
 {{/hascontinue}}
+{{#hasdeadlines}}
+    <section class="poli-deadlines" aria-labelledby="poli-deadlines-h">
+        <h2 class="poli-deadlines-head" id="poli-deadlines-h">
+            <i class="fa fa-bolt" aria-hidden="true"></i> {{#str}} deadlinesheading, theme_poli {{/str}}
+        </h2>
+        <ul class="poli-deadlines-list list-unstyled">
+            {{#deadlines}}
+                <li class="poli-deadline poli-deadline--{{ urgency }}">
+                    <a class="poli-deadline-link" href="{{{ url }}}">
+                        <span class="poli-deadline-dot" aria-hidden="true"></span>
+                        <span class="poli-deadline-main">
+                            <span class="poli-deadline-name">{{ name }}</span>
+                            <span class="poli-deadline-course">{{ coursename }}</span>
+                        </span>
+                        <span class="poli-deadline-meta">
+                            <span class="poli-deadline-badge">{{ relative }}</span>
+                            <span class="poli-deadline-date">{{ time }}</span>
+                        </span>
+                    </a>
+                </li>
+            {{/deadlines}}
+        </ul>
+    </section>
+{{/hasdeadlines}}

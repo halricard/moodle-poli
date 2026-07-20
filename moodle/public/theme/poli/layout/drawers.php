@@ -122,4 +122,57 @@ $templatecontext = [
 $templatecontext += theme_poli_navbar_context();
 $templatecontext += theme_poli_footer_context();
 
+// Grade reports (user report at /grade/report/user and the participant report
+// at /course/user.php, both pagelayout 'report'): turn each percentage cell into
+// a colour-banded visual bar so a student reads their standing at a glance
+// instead of scanning a wall of numbers. Vanilla JS, so no AMD build step; the
+// JS itself only touches grade tables + pure-"NN %" cells, so it's a no-op on
+// any other report page.
+if ($PAGE->pagelayout === 'report' || strpos($PAGE->pagetype, 'grade') !== false) {
+    // Localised "Percentage" column header, injected so the JS bars ONLY that
+    // column (not the weight / contribution columns, which are also "NN %").
+    $pctjs = 'window.poliPctLabel = ' . json_encode(get_string('percentage', 'grades')) . ';';
+    $PAGE->requires->js_init_code($pctjs . <<<'JS'
+
+(function() {
+    var norm = function(s) { return (s || '').replace(/\u00a0/g, ' ').trim(); };
+    var LABEL = norm(window.poliPctLabel).toLowerCase();
+    var run = function() {
+        document.querySelectorAll('table.user-grade').forEach(function(table) {
+            // Locate the percentage column by its header text.
+            var idx = -1;
+            var heads = table.querySelectorAll('thead th, thead td');
+            if (!heads.length) { heads = table.querySelectorAll('tr:first-child th, tr:first-child td'); }
+            heads.forEach(function(h) {
+                if (idx < 0 && norm(h.textContent).toLowerCase() === LABEL) { idx = h.cellIndex; }
+            });
+            if (idx < 0) { return; }
+            table.querySelectorAll('tbody tr').forEach(function(tr) {
+                var cell = tr.cells && tr.cells[idx];
+                if (!cell || cell.dataset.poliGraded) { return; }
+                var m = norm(cell.textContent).match(/^(\d+(?:[.,]\d+)?)\s*%$/);
+                if (!m) { return; }
+                var pct = Math.max(0, Math.min(100, parseFloat(m[1].replace(',', '.'))));
+                var band = pct >= 70 ? 'good' : (pct >= 50 ? 'mid' : 'low');
+                cell.dataset.poliGraded = '1';
+                cell.classList.add('poli-grade-cell', 'poli-grade--' + band);
+                var bar = document.createElement('span');
+                bar.className = 'poli-grade-bar';
+                bar.setAttribute('aria-hidden', 'true');
+                var fill = document.createElement('span');
+                fill.style.width = pct + '%';
+                bar.appendChild(fill);
+                cell.appendChild(bar);
+            });
+        });
+    };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+    } else {
+        run();
+    }
+})();
+JS, true);
+}
+
 echo $OUTPUT->render_from_template('theme_boost/drawers', $templatecontext);

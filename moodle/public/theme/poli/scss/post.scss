@@ -219,6 +219,31 @@ body.pagelayout-coursecategory {
     }
 }
 
+// Dashboard — widen to the marketing width (1280, like the hero) instead of
+// Boost's narrow reading column, and drop the boxed "page card" chrome so the
+// welcome / deadline widgets sit on a clean canvas.
+body.pagelayout-mydashboard {
+    #page.drawers .main-inner {
+        max-width: 1280px;
+        width: 100%;
+        margin-inline: auto;
+        padding-inline: clamp(1rem, 4vw, 2rem);
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    #region-main,
+    #region-main-box {
+        background: transparent !important;
+        padding: 0;
+        border: 0;
+    }
+
+    #page-content { padding-top: 1rem; }
+}
+
 // Course listing / all courses: full-width 3-column card grid (like the home).
 body.pagelayout-coursecategory .poli-catpage {
     padding-top: 1.5rem;
@@ -233,6 +258,78 @@ body.pagelayout-coursecategory .poli-catpage {
     body.pagelayout-coursecategory .poli-catpage .courses,
     body.pagelayout-coursecategory .poli-catpage .course_category_tree .courses {
         grid-template-columns: 1fr;
+    }
+}
+
+// =============================================================================
+// Activity page — prev / next navigation as a clear, tappable bar.
+// Core renders three columns (prev link · jump-to select · next link) as plain
+// btn-links. Turn them into proper nav buttons on a bordered footer bar so the
+// student always has an obvious "what's next" without hunting the course index.
+// =============================================================================
+.activity-navigation {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--poli-border);
+
+    // Core uses float-based columns; keep them but vertically centre content.
+    .float-start,
+    .float-end,
+    .mdl-align {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+    }
+    .float-end { justify-content: flex-end; }
+    .mdl-align { justify-content: center; }
+
+    // Prev / next links → bordered pill buttons.
+    .btn.btn-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 100%;
+        padding: 0.55rem 1.15rem;
+        border: 1px solid var(--poli-border);
+        border-radius: 50rem;
+        background: var(--poli-surface);
+        color: var(--bs-body-color) !important;
+        font-weight: 600;
+        text-decoration: none !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: transform 0.16s ease, border-color 0.16s ease, color 0.16s ease, background-color 0.16s ease;
+
+        &:hover,
+        &:focus-visible {
+            border-color: rgba(var(--poli-primary-rgb), 0.55);
+            color: var(--poli-primary) !important;
+            background: var(--poli-surface-muted);
+            transform: translateY(-2px);
+        }
+    }
+
+    // Jump-to-activity selector picks up the themed form-select automatically;
+    // just cap its width so it doesn't dominate the bar.
+    .urlselect,
+    select {
+        max-width: min(320px, 100%);
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .activity-navigation {
+        [class*="col"] { width: 100%; }
+
+        .float-start,
+        .float-end,
+        .mdl-align {
+            justify-content: center;
+            margin-bottom: 0.6rem;
+        }
+
+        .btn.btn-link { width: 100%; justify-content: center; }
     }
 }
 
@@ -1503,7 +1600,7 @@ body.pagelayout-login .login-layout-right .login-layout-right-content {
         border-color: transparent;
         color: var(--bs-body-color);
 
-        .poli-continue-cta { transform: translateX(3px); }
+        .poli-continue-cta i { transform: translateX(3px); }
         .poli-continue-media img { transform: scale(1.06); }
     }
 
@@ -1565,6 +1662,20 @@ body.pagelayout-login .login-layout-right .login-layout-right-content {
         white-space: nowrap;
     }
 
+    // Course + activity-type context under the activity name.
+    .poli-continue-course {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: var(--poli-text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        i { color: var(--poli-primary); }
+    }
+
     .poli-continue-progress {
         display: flex;
         align-items: center;
@@ -1597,13 +1708,18 @@ body.pagelayout-login .login-layout-right .login-layout-right-content {
         flex: 0 0 auto;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+        gap: 0.5rem;
+        padding: 0.6rem 1.15rem;
+        border-radius: 50rem;
         color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        white-space: nowrap;
         background: var(--poli-gradient);
+        box-shadow: 0 8px 20px -8px rgba(var(--poli-accent-rgb), 0.6);
         transition: transform 0.18s ease;
+
+        i { transition: transform 0.18s ease; }
     }
 }
 
@@ -1612,6 +1728,143 @@ body.pagelayout-login .login-layout-right .login-layout-right-content {
         .poli-continue-title { white-space: normal; }
         .poli-continue-cta { display: none; }
     }
+}
+
+// =============================================================================
+// Dashboard "Upcoming deadlines" — urgency-coloured list.
+// Traffic-light on the brand palette: magenta = urgent/overdue, amber = soon,
+// teal = on track. The left dot + badge carry the colour.
+// =============================================================================
+.poli-deadlines {
+    padding: clamp(1.1rem, 2.5vw, 1.5rem);
+    margin-bottom: 1.5rem;
+    border-radius: var(--poli-radius-xl);
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+}
+
+.poli-deadlines-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: $headings-font-family;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.9rem;
+
+    i { color: var(--poli-primary); }
+}
+
+.poli-deadlines-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0;
+}
+
+.poli-deadline {
+    // Per-row urgency colour, consumed by the dot and badge below.
+    --poli-deadline-color: var(--poli-primary);
+
+    &.poli-deadline--overdue,
+    &.poli-deadline--urgent { --poli-deadline-color: var(--poli-accent); }
+    &.poli-deadline--soon { --poli-deadline-color: var(--poli-tertiary); }
+    &.poli-deadline--ok { --poli-deadline-color: var(--poli-primary); }
+
+    .poli-deadline-link {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.6rem 0.7rem;
+        border-radius: 0.75rem;
+        color: var(--bs-body-color);
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+
+        &:hover,
+        &:focus-visible {
+            background-color: var(--poli-surface-muted);
+            color: var(--bs-body-color);
+        }
+    }
+
+    .poli-deadline-dot {
+        flex: 0 0 auto;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--poli-deadline-color);
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.001),
+                    0 0 10px -1px var(--poli-deadline-color);
+    }
+
+    &.poli-deadline--urgent .poli-deadline-dot,
+    &.poli-deadline--overdue .poli-deadline-dot {
+        animation: poli-deadline-pulse 1.6s ease-in-out infinite;
+    }
+
+    .poli-deadline-main {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .poli-deadline-name {
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .poli-deadline-course {
+        font-size: 0.8rem;
+        color: var(--poli-text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .poli-deadline-meta {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.15rem;
+        text-align: right;
+    }
+
+    .poli-deadline-badge {
+        display: inline-block;
+        padding: 0.15rem 0.6rem;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--poli-deadline-color);
+        background: color-mix(in srgb, var(--poli-deadline-color) 16%, transparent);
+        white-space: nowrap;
+    }
+
+    .poli-deadline-date {
+        font-size: 0.72rem;
+        color: var(--poli-text-muted);
+        white-space: nowrap;
+    }
+}
+
+@keyframes poli-deadline-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.75; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .poli-deadline .poli-deadline-dot { animation: none !important; }
+}
+
+@include media-breakpoint-down(sm) {
+    .poli-deadline .poli-deadline-date { display: none; }
 }
 
 // =============================================================================
@@ -4395,6 +4648,35 @@ a:not(.btn):not(.dropdown-item):not(.nav-link):not(.page-link):not(.poli-langtog
     border-color: var(--poli-border);
 }
 
+// Native <select> open list. The popup itself is browser-rendered, but modern
+// engines DO honour these — killing the OS default light-blue: dark option rows
+// and a brand-teal selection highlight. `color-scheme: dark` forces the dark
+// native chrome; `accent-color` re-tints the focus/selection.
+select,
+.form-select,
+.custom-select {
+    accent-color: var(--poli-primary);
+    color-scheme: dark;
+}
+
+select option,
+.form-select option,
+.custom-select option {
+    background-color: var(--poli-surface);
+    color: var(--bs-body-color);
+}
+
+// Chrome ignores plain background-color on a checked <option>; the flat gradient
+// is the reliable way to paint the highlighted row on-brand.
+select option:checked,
+select option:hover,
+select option:focus,
+.form-select option:checked,
+.form-select option:hover {
+    background: linear-gradient(var(--poli-primary), var(--poli-primary));
+    color: #031317;
+}
+
 .form-control::placeholder,
 input::placeholder,
 textarea::placeholder {
@@ -4902,6 +5184,55 @@ body.path-mod-lesson {
 .grade-report-grader,
 .gradereport-grader-table {
     color: var(--bs-body-color);
+}
+
+// Grader report "Show N per page" selector. Core wraps it in a bare <label>
+// with no layout, so the "Show" text stacks above the select and drifts to the
+// page's bottom-left. Lay it out as a tidy inline control.
+label:has(> select[name="perpage"]) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.25rem 0 0.5rem;
+    font-weight: 600;
+    color: var(--poli-text-muted);
+
+    select {
+        width: auto;
+        min-width: 4.5rem;
+    }
+}
+
+// Grade percentage cells → colour-banded visual bar (injected by drawers.php on
+// grade report pages). Teal = on track (≥70), amber = borderline (≥50),
+// magenta = at risk (<50). The bar reads at a glance under the number.
+.poli-grade-cell {
+    white-space: nowrap;
+
+    .poli-grade-bar {
+        display: block;
+        height: 5px;
+        margin-top: 5px;
+        min-width: 56px;
+        border-radius: 50rem;
+        background: rgba(#fff, 0.09);
+        overflow: hidden;
+
+        > span {
+            display: block;
+            height: 100%;
+            border-radius: 50rem;
+            transition: width 0.6s ease;
+        }
+    }
+
+    &.poli-grade--good .poli-grade-bar > span { background: var(--poli-primary); }
+    &.poli-grade--mid .poli-grade-bar > span { background: var(--poli-tertiary); }
+    &.poli-grade--low .poli-grade-bar > span { background: var(--poli-accent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .poli-grade-cell .poli-grade-bar > span { transition: none; }
 }
 
 // Course participant grade report (course/user.php?mode=grade).

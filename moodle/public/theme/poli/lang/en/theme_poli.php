@@ -149,6 +149,12 @@ $string['statcourses'] = 'My courses';
 $string['statinprogress'] = 'In progress';
 $string['statcompleted'] = 'Completed';
 $string['continuewhereleft'] = 'Continue where you left off';
+$string['resume'] = 'Resume';
+$string['deadlinesheading'] = 'Upcoming deadlines';
+$string['deadlineoverdue'] = 'Overdue';
+$string['deadlineinmins'] = 'in {$a} min';
+$string['deadlineinhours'] = 'in {$a}h';
+$string['deadlineindays'] = 'in {$a}d';
 
 // Footer.
 $string['footertagline'] = 'Excellence in education. Learn without limits, anytime and anywhere, with the quality of Poliedro.';
