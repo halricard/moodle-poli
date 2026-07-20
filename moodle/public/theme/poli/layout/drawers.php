@@ -120,5 +120,6 @@ $templatecontext = [
 ];
 
 $templatecontext += theme_poli_navbar_context();
+$templatecontext += theme_poli_footer_context();
 
 echo $OUTPUT->render_from_template('theme_boost/drawers', $templatecontext);

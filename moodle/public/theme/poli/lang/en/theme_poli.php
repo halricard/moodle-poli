@@ -100,6 +100,13 @@ $string['rawscsspre_desc'] = 'In this field you can provide initialising SCSS co
 $string['rawscss'] = 'Raw SCSS';
 $string['rawscss_desc'] = 'Use this field to provide SCSS or CSS code which will be injected at the end of the style sheet.';
 
+// Social links (footer).
+$string['socialfacebook'] = 'Facebook URL';
+$string['socialinstagram'] = 'Instagram URL';
+$string['socialyoutube'] = 'YouTube URL';
+$string['sociallinkedin'] = 'LinkedIn URL';
+$string['sociallink_desc'] = 'Full URL to the profile. Leave empty to hide this icon in the footer.';
+
 // Front page section headings.
 $string['exploretitle'] = 'Explore by area';
 $string['exploresubtitle'] = 'Find the path that fits your goals';
@@ -141,6 +148,7 @@ $string['welcomesub'] = 'Here is an overview of your learning. Keep it up!';
 $string['statcourses'] = 'My courses';
 $string['statinprogress'] = 'In progress';
 $string['statcompleted'] = 'Completed';
+$string['continuewhereleft'] = 'Continue where you left off';
 
 // Footer.
 $string['footertagline'] = 'Excellence in education. Learn without limits, anytime and anywhere, with the quality of Poliedro.';

@@ -98,6 +98,11 @@ foreach ($mycourses as $c) {
     }
 }
 
+// "Continue where you left off": the learner's most recently accessed course,
+// deep-linked to the next activity. Computed in lib.php (needs $DB, which is
+// not in the layout include scope).
+$continue = theme_poli_dashboard_continue($mycourses);
+
 $welcome = [
     'greeting' => $greeting,
     'firstname' => format_string($USER->firstname),
@@ -106,6 +111,12 @@ $welcome = [
     'completedcount' => $completedcount,
     'inprogresscount' => $inprogresscount,
     'mycoursesurl' => (new \core\url('/my/courses.php'))->out(false),
+    // Deep-link the progress/completed stats into the course overview block,
+    // pre-selecting its grouping so the list opens already filtered.
+    'inprogressurl' => (new \core\url('/my/courses.php', ['grouping' => 'inprogress']))->out(false),
+    'completedurl' => (new \core\url('/my/courses.php', ['grouping' => 'past']))->out(false),
+    'continue' => $continue,
+    'hascontinue' => (bool) $continue,
 ];
 
 $templatecontext = [
@@ -131,4 +142,5 @@ $templatecontext = [
 ];
 
 $templatecontext += theme_poli_navbar_context();
+$templatecontext += theme_poli_footer_context();
 echo $OUTPUT->render_from_template('theme_poli/mydashboard', $templatecontext);

@@ -903,6 +903,21 @@ body.editing .form-select::placeholder {
     color: var(--poli-text-muted) !important;
 }
 
+// The broad editing rule above strips background-image, which is exactly how a
+// Bootstrap switch draws its knob — without it the "Edit mode" toggle collapses
+// into a solid blue pill. Restore the knob (the variable already swaps between
+// the off/on glyphs) and keep the track transparent so the checked brand fill
+// from the navbar rule shows through.
+body.editing .form-switch .form-check-input {
+    background-image: var(--bs-form-switch-bg) !important;
+    background-color: rgba(var(--poli-primary-rgb), 0.08) !important;
+}
+
+body.editing .form-switch .form-check-input:checked {
+    background-color: var(--poli-primary) !important;
+    border-color: var(--poli-primary) !important;
+}
+
 body.editing a:hover,
 body.editing .nav-link:hover,
 body.editing .dropdown-item:hover,
@@ -946,13 +961,15 @@ body.editing .form-check-input:checked {
 
 body.editing .dropdown-item.active,
 body.editing .list-group-item.active,
-body.editing .page-item.active .page-link,
-body.editing .courseindex-item.active,
-body.editing .courseindex-link.active {
+body.editing .page-item.active .page-link {
     background-color: var(--poli-primary) !important;
     color: #fff !important;
     border-color: var(--poli-primary) !important;
 }
+
+// (Course index editing-mode rules live at the end of this file — they must be
+// last in source order, and the container must NEVER receive background-image:
+// none, since the brand gradient IS a background-image.)
 
 body.editing .action-menu .dropdown-toggle,
 body.editing .action-menu .dropdown-toggle:hover {
@@ -1390,6 +1407,139 @@ body.pagelayout-login .login-layout-right .login-layout-right-content {
     .poli-welcome { flex-direction: column; align-items: flex-start; }
     .poli-welcome-stats { width: 100%; }
     .poli-stat { flex: 1 1 0; min-width: 0; }
+}
+
+// "Continue where you left off" hero card (dashboard).
+.poli-continue {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--poli-radius-xl);
+    background: var(--poli-surface);
+    border: 1px solid var(--poli-border);
+    box-shadow: var(--poli-shadow-sm);
+    color: var(--bs-body-color);
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+    &:hover,
+    &:focus-visible {
+        transform: translateY(-3px);
+        box-shadow: var(--poli-shadow);
+        border-color: transparent;
+        color: var(--bs-body-color);
+
+        .poli-continue-cta { transform: translateX(3px); }
+        .poli-continue-media img { transform: scale(1.06); }
+    }
+
+    .poli-continue-media {
+        position: relative;
+        flex: 0 0 84px;
+        width: 84px;
+        height: 84px;
+        border-radius: 1rem;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--poli-card-start), var(--poli-card-end));
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+    }
+
+    .poli-continue-initials {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: $headings-font-family;
+        font-weight: 800;
+        font-size: 1.75rem;
+        color: rgba(#fff, 0.92);
+    }
+
+    .poli-continue-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .poli-continue-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--poli-primary);
+    }
+
+    .poli-continue-title {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        font-size: 1.15rem;
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .poli-continue-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+
+        .progress {
+            flex: 1 1 auto;
+            height: 6px;
+            max-width: 220px;
+            background: rgba(#fff, 0.1);
+            border-radius: 50rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            display: block;
+            height: 100%;
+            background: var(--poli-gradient);
+            border-radius: 50rem;
+        }
+
+        .poli-continue-pct {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--poli-text-muted);
+        }
+    }
+
+    .poli-continue-cta {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: #fff;
+        background: var(--poli-gradient);
+        transition: transform 0.18s ease;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .poli-continue {
+        .poli-continue-title { white-space: normal; }
+        .poli-continue-cta { display: none; }
+    }
 }
 
 // =============================================================================
@@ -1992,6 +2142,13 @@ body.pagelayout-login .login-container .form-control {
 
 .poli-footer-support a { color: var(--bs-body-color); }
 .poli-footer-support a:hover { color: var(--poli-primary); }
+
+// Hide the Support column entirely when neither a support email nor a doc link
+// is configured — an orphan heading reads as broken. Reversible: the column
+// reappears the moment support content exists.
+.poli-footer-help:not(:has(.poli-footer-support)) {
+    display: none;
+}
 
 .poli-footer-bottom {
     display: flex;
@@ -4435,6 +4592,36 @@ fieldset:disabled .form-control {
     }
 }
 
+// Comfortable reading measure for long-form text modules (page, book, lesson).
+// Caps line length at ~75ch so prose stays readable, while leaving media/tables
+// free to use the full width.
+body.path-mod-page,
+body.path-mod-book,
+body.path-mod-lesson {
+    #region-main .box.generalbox,
+    #region-main [role="main"] .generalbox,
+    .book_content,
+    .lesson-content {
+        p,
+        ul,
+        ol,
+        blockquote,
+        h1, h2, h3, h4, h5, h6 {
+            max-width: 75ch;
+        }
+
+        // Media and tables opt out of the reading cap.
+        img,
+        video,
+        iframe,
+        table,
+        .mediaplugin,
+        figure {
+            max-width: 100%;
+        }
+    }
+}
+
 // Icons and icon-only buttons: brand on hover, muted at rest.
 .btn-icon,
 .action-icon,
@@ -4566,17 +4753,326 @@ body.path-course.pagelayout-report {
     }
 }
 
-// Respect reduced motion.
+// Respect reduced motion — kill transforms, transitions and decorative
+// animations across every Poli surface (cards, tiles, hero, parallax).
 @media (prefers-reduced-motion: reduce) {
-    .btn,
-    .poli-category-card,
-    .poli-course-card,
-    .poli-course-media img,
-    .poli-catpage .coursebox,
-    .poli-stat,
-    .course-content .activity-item,
-    .block_myoverview .card,
-    .navbar .primary-navigation .nav-link::after {
-        transition: none !important;
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
     }
+
+    .poli-category-card:hover,
+    .poli-course-card:hover,
+    .poli-continue:hover,
+    .poli-stat:hover,
+    .poli-hero-tile:hover,
+    .poli-catpage .coursebox:hover,
+    .block_myoverview .card:hover,
+    .btn-poli:hover,
+    .course-content .activity-item:hover {
+        transform: none !important;
+    }
+}
+
+// =============================================================================
+// Accessibility: visible keyboard focus on custom interactive surfaces.
+// The global `*:focus-visible { outline: none }` above strips the native ring,
+// so every bespoke card/tile must restate a clear brand focus indicator.
+// =============================================================================
+.poli-category-card:focus-visible,
+.poli-continue:focus-visible,
+.poli-stat:focus-visible,
+.poli-hero-tile:focus-visible,
+.poli-course-card:focus-within,
+.poli-filter-chip:focus-visible,
+.poli-nav-btn:focus-visible,
+.poli-footer-social a:focus-visible,
+.poli-course-hero-cat:focus-visible {
+    outline: 3px solid var(--poli-primary) !important;
+    outline-offset: 2px;
+    border-radius: var(--poli-radius-xl);
+}
+
+// The course card uses a stretched link — put the ring on the card, not the
+// invisible anchor, and drop the anchor's own outline.
+.poli-course-card a:focus-visible { outline: none; }
+
+// =============================================================================
+// Accessibility: chip / badge contrast (WCAG AA).
+// White text on the light teal/amber brand tints fails AA; use darkened stops.
+// =============================================================================
+.poli-course-badge-enrolled {
+    background: #{darken($poli-brand-primary, 20%)};
+    color: #fff;
+}
+
+.poli-course-chip {
+    // Already dark-scrimmed, but firm it up for text over bright imagery.
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+}
+
+// =============================================================================
+// Course index — editing-mode legibility (final override, wins source order).
+// In editing mode the broad `body.editing .courseindex-link` rule paints every
+// link with a dark surface bg, and the current section can lose its .pageitem/
+// aria-current marker, so the active/current label went dark-on-dark. Undo the
+// dark box on all course-index links (restoring the normal muted look), then
+// re-assert the brand gradient + dark-ink text on the active item AND the
+// current section header so they read exactly like they do outside editing.
+// =============================================================================
+body.editing .courseindex .courseindex-link {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: var(--poli-text-muted) !important;
+}
+
+body.editing .courseindex .courseindex-item.active,
+body.editing .courseindex .courseindex-item.pageitem,
+body.editing .courseindex .courseindex-link.active,
+body.editing .courseindex .courseindex-link[aria-current="true"],
+body.editing .courseindex [aria-current="true"],
+body.editing .courseindex .courseindex-section.current > .courseindex-item.courseindex-section-title {
+    // IMPORTANT: the gradient IS a background-image. The container must never
+    // appear in a later `background-image: none` list, or it erases itself
+    // (that was the dark-on-dark bug). Only DESCENDANTS get their backgrounds
+    // stripped, so the item's gradient always shows through.
+    background: linear-gradient(135deg, var(--poli-primary), #{mix($poli-brand-primary, $poli-brand-accent, 74%)}) !important;
+    border-color: transparent !important;
+    border-radius: 0.6rem !important;
+    box-shadow: 0 10px 22px -14px rgba(var(--poli-primary-rgb), 0.85);
+    color: #031317 !important;
+
+    * {
+        color: #031317 !important;
+        fill: #031317 !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        opacity: 1 !important;
+    }
+}
+
+// =============================================================================
+// Activity chooser modal ("Add an activity or resource").
+// Each option card is a Bootstrap `.btn`, so its default hover paints a light
+// background — leaving white text on a white card (unreadable on dark). Drive
+// the button variables to the dark palette and give hover a clear brand accent.
+// =============================================================================
+.modchoosercontainer {
+    .option {
+        --bs-btn-bg: var(--poli-surface-muted);
+        --bs-btn-hover-bg: var(--poli-surface);
+        --bs-btn-active-bg: var(--poli-surface);
+        --bs-btn-color: var(--bs-body-color);
+        --bs-btn-hover-color: var(--bs-body-color);
+        --bs-btn-active-color: var(--bs-body-color);
+        --bs-btn-border-color: var(--poli-border);
+        --bs-btn-hover-border-color: rgba(var(--poli-primary-rgb), 0.6);
+        --bs-btn-active-border-color: rgba(var(--poli-primary-rgb), 0.6);
+
+        background-color: var(--poli-surface-muted);
+        border: 1px solid var(--poli-border);
+        color: var(--bs-body-color);
+        text-align: start;
+        transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+
+        // Core paints these light: :hover → $gray-100, .selected → $primary-
+        // light-background, :active/:focus → similar. Cover EVERY state so the
+        // card can never turn white. `.selected` is the keyboard/clicked state
+        // (was the remaining white bug on the "Add"-focused card).
+        &:hover,
+        &:focus,
+        &:focus-visible,
+        &:focus-within,
+        &:active,
+        &.active,
+        &.selected {
+            background-color: var(--poli-surface) !important;
+            border-color: rgba(var(--poli-primary-rgb), 0.6) !important;
+            color: var(--bs-body-color) !important;
+            box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.65);
+        }
+
+        &:hover,
+        &:focus-visible {
+            transform: translateY(-2px);
+        }
+
+        // Force every text layer light — core marks these .text-body, which the
+        // light hover/selected background would otherwise render invisible.
+        .optionname,
+        .optioninfo,
+        .text-body,
+        a.stretched-link {
+            color: var(--bs-body-color) !important;
+        }
+
+        &:hover .optionname,
+        &.selected .optionname { color: var(--poli-primary) !important; }
+    }
+
+    // Info / favourite icon buttons inside each card.
+    .optionaction {
+        color: var(--poli-text-muted) !important;
+        background: transparent !important;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--poli-primary) !important;
+            background: rgba(var(--poli-primary-rgb), 0.12) !important;
+        }
+    }
+}
+
+// Activity chooser — the info/summary detail panel (core: background:$white).
+// Cover the summary itself AND every carousel container it can render into, so
+// no light surface leaks through regardless of which region the JS uses.
+.modchooser .optionsummary,
+.optionsummary,
+.modchooser .carousel-item,
+.modchooser [data-region="help"],
+.modchooser [data-region="pluginCarousel"],
+.modchooser [data-region="modules"] {
+    background-color: var(--poli-surface) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.modchooser .optionsummary {
+    .optionsummary-heading,
+    .activitychooser-option-details,
+    .optionsummary-summary,
+    .optionsummary-help,
+    .modchooser-detail,
+    .modchooser-detail-value,
+    h1, h2, h3, h4, h5, h6, p, span, li, a, div {
+        color: var(--bs-body-color) !important;
+        background-color: transparent !important;
+    }
+
+    .modchooser-detail-name,
+    .text-muted {
+        color: var(--poli-text-muted) !important;
+    }
+}
+
+// Activity chooser nav pills (Assessment / Collaboration / …): core uses
+// $gray-100 on hover and $body-color on the active pill background. Keep them
+// on-brand and legible on dark.
+.modchoosernav {
+    .nav-link:not(.active):hover {
+        background-color: var(--poli-surface) !important;
+        color: var(--poli-primary) !important;
+    }
+
+    .nav-link.active {
+        background-color: var(--poli-primary) !important;
+        color: #fff !important;
+    }
+}
+
+// =============================================================================
+// Footer band — force one uniform surface. Core-injected support/doc links (and
+// some inherited wrappers) can carry their own light background, which showed up
+// as lighter rectangles behind the Explore/Support columns. Nothing inside the
+// footer should paint its own background.
+// =============================================================================
+.poli-footer {
+    background: var(--poli-surface-muted) !important;
+
+    .poli-footer-grid,
+    .poli-footer-brand,
+    .poli-footer-col,
+    .poli-footer-bottom,
+    .poli-footer-meta,
+    .poli-footer-support,
+    .poli-footer-social,
+    nav,
+    ul,
+    li {
+        background: transparent !important;
+    }
+}
+
+// =============================================================================
+// Sticky action footer (forms: Save / Save and display / Cancel).
+// Core markup: <div id="sticky-footer" class="stickyfooter bg-white border-top">.
+// It sits at the bottom of the viewport, BELOW the page footer in the DOM (this
+// is standard Moodle — the page footer is content, this is a pinned action bar).
+// Give it a clear dark surface + shadow so it reads as an action bar, and keep
+// the primary submit brand-teal.
+// =============================================================================
+#sticky-footer,
+#sticky-footer.stickyfooter,
+.stickyfooter {
+    background-color: var(--poli-surface) !important;
+    border-top: 1px solid var(--poli-border) !important;
+    box-shadow: 0 -10px 28px -14px rgba(0, 0, 0, 0.7);
+    color: var(--bs-body-color) !important;
+
+    // Primary submit ("Save and return to course") → brand teal.
+    .btn-primary {
+        --bs-btn-bg: #{$poli-brand-primary};
+        --bs-btn-border-color: #{$poli-brand-primary};
+        --bs-btn-hover-bg: #{darken($poli-brand-primary, 6%)};
+        --bs-btn-hover-border-color: #{darken($poli-brand-primary, 8%)};
+        --bs-btn-color: #fff;
+        --bs-btn-hover-color: #fff;
+        background-color: #{$poli-brand-primary} !important;
+        border-color: #{$poli-brand-primary} !important;
+        color: #fff !important;
+    }
+
+    // Secondary submits + Cancel → dark surface, teal on hover.
+    .btn-secondary {
+        --bs-btn-bg: var(--poli-surface-muted);
+        --bs-btn-border-color: var(--poli-border);
+        --bs-btn-color: var(--bs-body-color);
+        --bs-btn-hover-bg: var(--poli-surface-muted);
+        --bs-btn-hover-border-color: rgba(var(--poli-primary-rgb), 0.5);
+        --bs-btn-hover-color: var(--poli-primary);
+        background-color: var(--poli-surface-muted) !important;
+        border: 1px solid var(--poli-border) !important;
+        color: var(--bs-body-color) !important;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--poli-primary) !important;
+            border-color: rgba(var(--poli-primary-rgb), 0.5) !important;
+        }
+    }
+}
+
+// =============================================================================
+// Footer links — never paint their own background. In editing mode the broad
+// `body.editing a { background-color: surface }` rule hit every footer link,
+// stacking into a lighter box behind the Explore/Support columns (the box
+// started at the links, not the headings — that was the tell).
+// =============================================================================
+.poli-footer a,
+.poli-footer .poli-footer-support,
+.poli-footer .poli-footer-support a,
+body.editing .poli-footer a,
+body.editing .poli-footer .poli-footer-support,
+body.editing .poli-footer .poli-footer-support a {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+// =============================================================================
+// Sticky action bar vs footer — never overlap. Core only adds the page bottom
+// clearance inside a desktop media query; assert it at every breakpoint, and
+// keep the bar opaque and above all page content.
+// =============================================================================
+body.hasstickyfooter #page.drawers,
+#page.drawers.hasstickyfooter {
+    margin-bottom: calc(max(80px, #{$font-size-base} * 3)) !important;
+}
+
+.stickyfooter,
+#sticky-footer {
+    z-index: 1030 !important;
 }

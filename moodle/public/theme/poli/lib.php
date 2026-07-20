@@ -363,6 +363,43 @@ function theme_poli_core_admin_logo_url(string $filearea): string {
 }
 
 /**
+ * Footer context shared across all Poli layouts: configurable social links
+ * (hidden when unset) and a server-side copyright year.
+ *
+ * @return array
+ */
+function theme_poli_footer_context(): array {
+    $theme = theme_config::load('poli');
+
+    // Network => Font Awesome brand icon (all on-brand, no off-list networks).
+    $networks = [
+        'facebook' => 'fa-facebook-f',
+        'instagram' => 'fa-instagram',
+        'youtube' => 'fa-youtube',
+        'linkedin' => 'fa-linkedin-in',
+    ];
+
+    $social = [];
+    foreach ($networks as $network => $icon) {
+        $url = $theme->settings->{'social' . $network} ?? '';
+        if (empty($url)) {
+            continue;
+        }
+        $social[] = [
+            'url' => $url,
+            'icon' => $icon,
+            'label' => ucfirst($network),
+        ];
+    }
+
+    return [
+        'footersocial' => $social,
+        'hasfootersocial' => !empty($social),
+        'footeryear' => date('Y'),
+    ];
+}
+
+/**
  * Brand accent palette used to colour category tiles and card chips when no
  * image is present. Cycles through the Poliedro logo colours.
  *
@@ -409,7 +446,14 @@ function theme_poli_get_categories(int $limit = 8): array {
         if ($category->get_courses_count() < 1) {
             continue;
         }
-        $accent = $palette[$i % count($palette)];
+        // Key the accent + icon off the category id (not the loop position), so
+        // reordering categories never reshuffles their colours/icons. An admin
+        // can force a specific icon via the category 'idnumber' (e.g. "fa-shield").
+        $accent = $palette[$category->id % count($palette)];
+        $icon = $icons[$category->id % count($icons)];
+        if (!empty($category->idnumber) && preg_match('/^fa-[a-z0-9-]+$/', trim($category->idnumber))) {
+            $icon = trim($category->idnumber);
+        }
         $result[] = [
             'id' => $category->id,
             'name' => format_string($category->name, true, ['context' => context_coursecat::instance($category->id)]),
@@ -418,7 +462,7 @@ function theme_poli_get_categories(int $limit = 8): array {
             'accentname' => $accent[0],
             'accentstart' => $accent[1],
             'accentend' => $accent[2],
-            'icon' => $icons[$i % count($icons)],
+            'icon' => $icon,
         ];
         $i++;
         if ($i >= $limit) {
@@ -444,11 +488,15 @@ function theme_poli_course_image($course): array {
     $courselistelement = new core_course_list_element($course);
     foreach ($courselistelement->get_course_overviewfiles() as $file) {
         if ($file->is_valid_image()) {
+            // The overviewfiles filearea does not use an itemid in its pluginfile
+            // path; passing the file's itemid (0) injects an extra "/0/" segment
+            // that makes course_pluginfile() return a 404. Use null to match the
+            // core course renderer and produce a resolvable URL.
             $imageurl = \core\url::make_pluginfile_url(
                 $file->get_contextid(),
                 $file->get_component(),
                 $file->get_filearea(),
-                $file->get_itemid(),
+                null,
                 $file->get_filepath(),
                 $file->get_filename(),
                 false
@@ -493,7 +541,7 @@ function theme_poli_course_image($course): array {
  * @return array template-ready course rows.
  */
 function theme_poli_get_courses(int $limit = 8): array {
-    global $CFG, $USER;
+    global $CFG, $USER, $DB;
     require_once($CFG->dirroot . '/course/lib.php');
 
     $courses = [];
@@ -509,13 +557,23 @@ function theme_poli_get_courses(int $limit = 8): array {
         }
     }
 
-    // Top up with the most recent visible courses on the site.
+    // Top up with the most recent visible courses on the site. Bounded query:
+    // never loads the whole catalogue into memory (get_courses('all') does),
+    // so this scales as the corporate catalogue grows.
     if (count($courses) < $limit) {
-        $recent = get_courses('all', 'c.timecreated DESC', 'c.id, c.fullname, c.shortname, c.summary, c.summaryformat, c.category, c.visible');
+        // Over-fetch a little so already-enrolled duplicates + SITEID can be
+        // skipped and we still reach $limit.
+        $fetch = $limit + count($courses) + 1;
+        $recent = $DB->get_records_select(
+            'course',
+            'id <> :siteid AND visible = 1',
+            ['siteid' => SITEID],
+            'timecreated DESC',
+            'id, fullname, shortname, summary, summaryformat, category, visible',
+            0,
+            $fetch
+        );
         foreach ($recent as $course) {
-            if ($course->id == SITEID || empty($course->visible)) {
-                continue;
-            }
             if (isset($courses[$course->id])) {
                 continue;
             }
@@ -560,6 +618,97 @@ function theme_poli_get_courses(int $limit = 8): array {
 }
 
 /**
+ * Build the dashboard "Continue where you left off" card: the learner's most
+ * recently accessed enrolled course, deep-linked to its next activity.
+ *
+ * @param array $mycourses Enrolled courses keyed by id (from enrol_get_my_courses).
+ * @return array|false Template context, or false when there is nothing to resume.
+ */
+function theme_poli_dashboard_continue(array $mycourses) {
+    global $DB, $USER;
+
+    // One indexed query: the most recently touched course for this user.
+    $lastcourseid = $DB->get_field_sql(
+        "SELECT courseid FROM {user_lastaccess} WHERE userid = :uid ORDER BY timeaccess DESC",
+        ['uid' => $USER->id],
+        IGNORE_MULTIPLE
+    );
+    if (!$lastcourseid || $lastcourseid == SITEID || !isset($mycourses[$lastcourseid])) {
+        return false;
+    }
+
+    try {
+        $course = get_course($lastcourseid);
+        if (!can_access_course($course)) {
+            return false;
+        }
+        $ctx = context_course::instance($course->id);
+        $image = theme_poli_course_image($course);
+        $pct = \core_completion\progress::get_course_progress_percentage($course);
+
+        return array_merge($image, [
+            'fullname' => format_string($course->fullname, true, ['context' => $ctx]),
+            'url' => theme_poli_course_resume_url($course)
+                ?? (new \core\url('/course/view.php', ['id' => $course->id]))->out(false),
+            'hasprogress' => $pct !== null,
+            'progress' => $pct !== null ? (int) round($pct) : 0,
+        ]);
+    } catch (\Throwable $e) {
+        return false;
+    }
+}
+
+/**
+ * Resolve a "resume" deep-link for a course: the first activity the user has
+ * not yet completed (or simply the first visible activity when completion is
+ * off). Lets the course hero / dashboard jump straight into the next lesson
+ * instead of dumping the learner on the course index.
+ *
+ * Uses the request-cached modinfo, so it adds no extra queries per pageload.
+ *
+ * @param stdClass $course
+ * @return string|null Absolute activity URL, or null when nothing is resumable.
+ */
+function theme_poli_course_resume_url($course): ?string {
+    global $USER;
+
+    try {
+        $modinfo = get_fast_modinfo($course);
+    } catch (\Throwable $e) {
+        return null;
+    }
+
+    $completion = new \completion_info($course);
+    $usecompletion = $completion->is_enabled();
+
+    $firsturl = null;
+    foreach ($modinfo->get_cms() as $cm) {
+        // Only real, viewable, user-visible activities with their own page.
+        if (!$cm->uservisible || !$cm->has_view() || $cm->deletioninprogress) {
+            continue;
+        }
+        $url = $cm->url ? $cm->url->out(false) : null;
+        if ($url === null) {
+            continue;
+        }
+        if ($firsturl === null) {
+            $firsturl = $url;
+        }
+        if (!$usecompletion || $cm->completion == COMPLETION_TRACKING_NONE) {
+            continue;
+        }
+        $data = $completion->get_data($cm, false, $USER->id);
+        if ((int) $data->completionstate === COMPLETION_INCOMPLETE) {
+            // First not-yet-completed tracked activity: resume here.
+            return $url;
+        }
+    }
+
+    // Everything complete (or no completion): fall back to the first activity.
+    return $firsturl;
+}
+
+/**
  * Build the course presentation hero context for the course layout.
  *
  * @param stdClass $course
@@ -582,29 +731,35 @@ function theme_poli_course_hero($course): array {
         );
     }
 
-    // Course teachers (editing teachers, by archetype).
-    $teachers = [];
-    $seen = [];
-    $teacherroles = get_archetype_roles('editingteacher');
-    foreach ($teacherroles as $role) {
-        $users = get_role_users($role->id, $coursecontext, false,
-            'u.id, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, '
-            . 'u.alternatename, u.picture, u.imagealt, u.email');
-        foreach ($users as $teacher) {
-            if (isset($seen[$teacher->id])) {
-                continue;
-            }
-            $seen[$teacher->id] = true;
-            $userpic = new \core\output\user_picture($teacher);
-            $userpic->size = 36;
-            $teachers[] = [
-                'name' => fullname($teacher),
-                'picture' => $userpic->get_url($PAGE)->out(false),
-            ];
-            if (count($teachers) >= 4) {
-                break 2;
+    // Course teachers (editing teachers, by archetype). Cached per course: the
+    // role_users lookup is expensive on large enrolments and rarely changes.
+    $cache = \cache::make('theme_poli', 'courseteachers');
+    $teachers = $cache->get($course->id);
+    if ($teachers === false) {
+        $teachers = [];
+        $seen = [];
+        $teacherroles = get_archetype_roles('editingteacher');
+        foreach ($teacherroles as $role) {
+            $users = get_role_users($role->id, $coursecontext, false,
+                'u.id, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, '
+                . 'u.alternatename, u.picture, u.imagealt, u.email');
+            foreach ($users as $teacher) {
+                if (isset($seen[$teacher->id])) {
+                    continue;
+                }
+                $seen[$teacher->id] = true;
+                $userpic = new \core\output\user_picture($teacher);
+                $userpic->size = 36;
+                $teachers[] = [
+                    'name' => fullname($teacher),
+                    'picture' => $userpic->get_url($PAGE)->out(false),
+                ];
+                if (count($teachers) >= 4) {
+                    break 2;
+                }
             }
         }
+        $cache->set($course->id, $teachers);
     }
 
     // Progress for enrolled users.
@@ -626,5 +781,7 @@ function theme_poli_course_hero($course): array {
         'isenrolled' => $isenrolled,
         'hasprogress' => $progress !== null,
         'progress' => $progress,
+        // Deep-link enrolled learners into their next activity.
+        'resumeurl' => $isenrolled ? theme_poli_course_resume_url($course) : null,
     ]);
 }

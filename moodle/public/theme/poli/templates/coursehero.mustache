@@ -64,10 +64,20 @@
             </div>
         {{/hasprogress}}
 
-        <a href="#poli-course-content" class="btn btn-poli-ghost ms-auto">
-            {{#isenrolled}}{{#str}} continuelearning, theme_poli {{/str}}{{/isenrolled}}
-            {{^isenrolled}}{{#str}} accesscourse, theme_poli {{/str}}{{/isenrolled}}
-            <i class="fa fa-arrow-down ms-2" aria-hidden="true"></i>
-        </a>
+        {{! Enrolled learners with a resumable activity jump straight into it;
+            everyone else just scrolls to the course content. }}
+        {{#resumeurl}}
+            <a href="{{ resumeurl }}" class="btn btn-poli-ghost ms-auto">
+                {{#str}} continuelearning, theme_poli {{/str}}
+                <i class="fa fa-arrow-right ms-2" aria-hidden="true"></i>
+            </a>
+        {{/resumeurl}}
+        {{^resumeurl}}
+            <a href="#poli-course-content" class="btn btn-poli-ghost ms-auto">
+                {{#isenrolled}}{{#str}} continuelearning, theme_poli {{/str}}{{/isenrolled}}
+                {{^isenrolled}}{{#str}} accesscourse, theme_poli {{/str}}{{/isenrolled}}
+                <i class="fa fa-arrow-down ms-2" aria-hidden="true"></i>
+            </a>
+        {{/resumeurl}}
     </div>
 </section>

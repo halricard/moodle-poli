@@ -205,6 +205,15 @@ if ($ADMIN->fulltree) {
     $setting = new admin_setting_configtext($name, $title, $description, 8, PARAM_INT);
     $page->add($setting);
 
+    // Social links (footer). Empty fields are hidden in the footer.
+    foreach (['facebook', 'instagram', 'youtube', 'linkedin'] as $network) {
+        $name = 'theme_poli/social' . $network;
+        $title = get_string('social' . $network, 'theme_poli');
+        $description = get_string('sociallink_desc', 'theme_poli');
+        $setting = new admin_setting_configtext($name, $title, $description, '', PARAM_URL);
+        $page->add($setting);
+    }
+
     $settings->add($page);
 
     // =========================================================================

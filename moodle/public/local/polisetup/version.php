@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Poli theme version metadata.
+ * Poliedro setup — one-shot site configuration for the corporate university.
  *
- * @package    theme_poli
+ * @package    local_polisetup
  * @copyright  2026 Poliedro
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2026071900;
 $plugin->requires  = 2026041000;
-$plugin->component = 'theme_poli';
+$plugin->component = 'local_polisetup';
+$plugin->maturity  = MATURITY_STABLE;
 $plugin->dependencies = [
-    'theme_boost' => 2026042000,
+    'theme_poli' => 2026071900,
 ];

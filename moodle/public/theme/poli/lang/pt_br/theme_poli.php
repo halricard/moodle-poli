@@ -100,6 +100,13 @@ $string['rawscsspre_desc'] = 'Código SCSS injetado antes de tudo. Geralmente us
 $string['rawscss'] = 'SCSS bruto';
 $string['rawscss_desc'] = 'Código SCSS ou CSS injetado no final da folha de estilos.';
 
+// Social links (footer).
+$string['socialfacebook'] = 'URL do Facebook';
+$string['socialinstagram'] = 'URL do Instagram';
+$string['socialyoutube'] = 'URL do YouTube';
+$string['sociallinkedin'] = 'URL do LinkedIn';
+$string['sociallink_desc'] = 'URL completa do perfil. Deixe vazio para ocultar este ícone no rodapé.';
+
 // Front page section headings.
 $string['exploretitle'] = 'Explore por área';
 $string['exploresubtitle'] = 'Encontre o caminho ideal para os seus objetivos';
@@ -141,6 +148,7 @@ $string['welcomesub'] = 'Aqui está um resumo dos seus estudos. Continue assim!'
 $string['statcourses'] = 'Meus cursos';
 $string['statinprogress'] = 'Em andamento';
 $string['statcompleted'] = 'Concluídos';
+$string['continuewhereleft'] = 'Continuar de onde parou';
 
 // Footer.
 $string['footertagline'] = 'Excelência em educação. Aprenda sem limites, a qualquer hora e em qualquer lugar, com a qualidade Poliedro.';

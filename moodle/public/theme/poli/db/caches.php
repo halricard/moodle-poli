@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Poli theme version metadata.
+ * Cache definitions for the Poli theme.
  *
  * @package    theme_poli
  * @copyright  2026 Poliedro
@@ -24,9 +24,16 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026071900;
-$plugin->requires  = 2026041000;
-$plugin->component = 'theme_poli';
-$plugin->dependencies = [
-    'theme_boost' => 2026042000,
+$definitions = [
+    // Course teacher list rendered in the course hero. Recomputing it runs
+    // get_role_users() per archetype on every course pageload, which is heavy
+    // on courses with many enrolments — cache it per course.
+    'courseteachers' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 30,
+        'ttl' => 1800,
+    ],
 ];

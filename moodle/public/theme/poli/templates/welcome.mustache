@@ -22,7 +22,7 @@
 <section class="poli-welcome">
     <div class="poli-welcome-intro">
         <span class="poli-welcome-date"><i class="fa fa-calendar-day" aria-hidden="true"></i> {{ date }}</span>
-        <h1 class="poli-welcome-title">{{ greeting }}, <span class="poli-text-gradient">{{ firstname }}</span> 👋</h1>
+        <h1 class="poli-welcome-title">{{ greeting }}, <span class="poli-text-gradient">{{ firstname }}</span> <span aria-hidden="true">👋</span></h1>
         <p class="poli-welcome-sub">{{#str}} welcomesub, theme_poli {{/str}}</p>
     </div>
     <div class="poli-welcome-stats">
@@ -31,15 +31,41 @@
             <span class="poli-stat-value">{{ coursecount }}</span>
             <span class="poli-stat-label">{{#str}} statcourses, theme_poli {{/str}}</span>
         </a>
-        <div class="poli-stat">
-            <span class="poli-stat-icon poli-stat-icon-2"><i class="fa fa-spinner" aria-hidden="true"></i></span>
+        <a class="poli-stat" href="{{ inprogressurl }}">
+            <span class="poli-stat-icon poli-stat-icon-2"><i class="fa fa-chart-line" aria-hidden="true"></i></span>
             <span class="poli-stat-value">{{ inprogresscount }}</span>
             <span class="poli-stat-label">{{#str}} statinprogress, theme_poli {{/str}}</span>
-        </div>
-        <div class="poli-stat">
+        </a>
+        <a class="poli-stat" href="{{ completedurl }}">
             <span class="poli-stat-icon poli-stat-icon-3"><i class="fa fa-trophy" aria-hidden="true"></i></span>
             <span class="poli-stat-value">{{ completedcount }}</span>
             <span class="poli-stat-label">{{#str}} statcompleted, theme_poli {{/str}}</span>
-        </div>
+        </a>
     </div>
 </section>
+{{#hascontinue}}
+    <a class="poli-continue" href="{{ continue.url }}"
+       style="--poli-card-start: {{ continue.accentstart }}; --poli-card-end: {{ continue.accentend }};">
+        <span class="poli-continue-media">
+            {{#continue.hasimage}}
+                <img src="{{ continue.imageurl }}" alt="" loading="lazy">
+            {{/continue.hasimage}}
+            {{^continue.hasimage}}
+                <span class="poli-continue-initials">{{ continue.initials }}</span>
+            {{/continue.hasimage}}
+        </span>
+        <span class="poli-continue-body">
+            <span class="poli-continue-eyebrow"><i class="fa fa-play" aria-hidden="true"></i> {{#str}} continuewhereleft, theme_poli {{/str}}</span>
+            <span class="poli-continue-title">{{ continue.fullname }}</span>
+            {{#continue.hasprogress}}
+                <span class="poli-continue-progress">
+                    <span class="progress" role="progressbar" aria-valuenow="{{ continue.progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{#str}} courseprogress, theme_poli {{/str}}">
+                        <span class="progress-bar" style="width: {{ continue.progress }}%;"></span>
+                    </span>
+                    <span class="poli-continue-pct">{{ continue.progress }}%</span>
+                </span>
+            {{/continue.hasprogress}}
+        </span>
+        <span class="poli-continue-cta" aria-hidden="true"><i class="fa fa-arrow-right"></i></span>
+    </a>
+{{/hascontinue}}

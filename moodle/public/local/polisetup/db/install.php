@@ -15,18 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Poli theme version metadata.
+ * Runs the Poliedro baseline once, when the plugin is installed.
  *
- * @package    theme_poli
+ * @package    local_polisetup
  * @copyright  2026 Poliedro
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026071900;
-$plugin->requires  = 2026041000;
-$plugin->component = 'theme_poli';
-$plugin->dependencies = [
-    'theme_boost' => 2026042000,
-];
+/**
+ * Install hook: apply the corporate baseline.
+ *
+ * @return bool
+ */
+function xmldb_local_polisetup_install() {
+    global $CFG;
+    require_once($CFG->dirroot . '/local/polisetup/locallib.php');
+
+    $log = local_polisetup_apply();
+    foreach ($log as $line) {
+        mtrace('  [polisetup] ' . $line);
+    }
+
+    return true;
+}

@@ -25,12 +25,15 @@
             <div class="poli-footer-brand">
                 <span class="poli-footer-logo">{{{ sitename }}}</span>
                 <p class="poli-footer-tagline">{{#str}} footertagline, theme_poli {{/str}}</p>
-                <div class="poli-footer-social">
-                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
-                    <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
-                </div>
+                {{#hasfootersocial}}
+                    <div class="poli-footer-social">
+                        {{#footersocial}}
+                            <a href="{{ url }}" aria-label="{{ label }}" target="_blank" rel="noopener noreferrer">
+                                <i class="fa-brands {{ icon }}" aria-hidden="true"></i>
+                            </a>
+                        {{/footersocial}}
+                    </div>
+                {{/hasfootersocial}}
             </div>
 
             <nav class="poli-footer-col" aria-label="{{#str}} footerexplore, theme_poli {{/str}}">
@@ -41,7 +44,7 @@
                 <a href="{{ config.wwwroot }}/my/courses.php">{{#str}} footermycourses, theme_poli {{/str}}</a>
             </nav>
 
-            <div class="poli-footer-col">
+            <div class="poli-footer-col poli-footer-help">
                 <h4>{{#str}} footerhelp, theme_poli {{/str}}</h4>
                 {{# output.supportemail }}
                     <div class="poli-footer-support">{{{ output.supportemail }}}</div>
@@ -53,7 +56,7 @@
         </div>
 
         <div class="poli-footer-bottom">
-            <span>&copy; <span data-poli-year>2026</span> {{{ sitename }}}. {{#str}} footerrights, theme_poli {{/str}}</span>
+            <span>&copy; <span data-poli-year>{{#footeryear}}{{ footeryear }}{{/footeryear}}{{^footeryear}}2026{{/footeryear}}</span> {{{ sitename }}}. {{#str}} footerrights, theme_poli {{/str}}</span>
             <span class="poli-footer-powered">{{#str}} poweredbymoodle, core {{/str}}</span>
         </div>
 
@@ -73,4 +76,26 @@ require(['core/copy_to_clipboard']);
 document.querySelectorAll('[data-poli-year]').forEach(function(el) {
     el.textContent = new Date().getFullYear();
 });
+
+// Hide notification / message count badges that show "0" — a zero badge is
+// noise that trains users to ignore the popover. Core hides them at page load,
+// but the popover JS can re-render a "0" after fetching the live count, so we
+// keep them in sync here (initial pass + observe later mutations).
+(function() {
+    var syncZeroBadges = function() {
+        document.querySelectorAll('[data-region="count-container"]').forEach(function(el) {
+            var count = parseInt((el.textContent || '').trim(), 10);
+            el.classList.toggle('hidden', !count);
+        });
+    };
+    syncZeroBadges();
+    var rail = document.getElementById('usernavigation');
+    if (rail && 'MutationObserver' in window) {
+        new MutationObserver(syncZeroBadges).observe(rail, {
+            subtree: true,
+            childList: true,
+            characterData: true,
+        });
+    }
+})();
 {{/js}}

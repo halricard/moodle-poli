@@ -15,18 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Poli theme version metadata.
+ * Re-apply the Poliedro baseline from the command line.
  *
- * @package    theme_poli
+ * Usage: php local/polisetup/cli/apply.php
+ *
+ * @package    local_polisetup
  * @copyright  2026 Poliedro
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+define('CLI_SCRIPT', true);
 
-$plugin->version   = 2026071900;
-$plugin->requires  = 2026041000;
-$plugin->component = 'theme_poli';
-$plugin->dependencies = [
-    'theme_boost' => 2026042000,
-];
+require(__DIR__ . '/../../../config.php');
+require_once($CFG->libdir . '/clilib.php');
+require_once($CFG->dirroot . '/local/polisetup/locallib.php');
+
+[$options, $unrecognised] = cli_get_params(['help' => false], ['h' => 'help']);
+
+if ($options['help']) {
+    cli_writeln("Apply the Poliedro corporate baseline (theme, login, language, site name).\n");
+    cli_writeln("Usage: php local/polisetup/cli/apply.php");
+    exit(0);
+}
+
+cli_heading('Poliedro setup');
+foreach (local_polisetup_apply() as $line) {
+    cli_writeln('  ' . $line);
+}
+exit(0);
