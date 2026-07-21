@@ -3660,6 +3660,44 @@ a.list-group-item-action:hover,
     i {
         color: currentColor;
     }
+
+    // Chat bubbles — core paints the sent bubble a light colour that's illegible
+    // on the dark theme. Own message = brand teal tint, received = muted surface.
+    .message.send,
+    [data-region="message"].send {
+        background-color: rgba(var(--poli-primary-rgb), 0.16) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    .message.received,
+    [data-region="message"].received {
+        background-color: var(--poli-surface-muted) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    // Bubble text + timestamp inside the bubbles.
+    .message [data-region="text-container"],
+    .message [data-region="text-container"] * {
+        color: var(--bs-body-color) !important;
+    }
+    .message .time,
+    .message [data-region="time-created"] {
+        color: var(--poli-text-muted) !important;
+    }
+
+    // The bubble pointer ("tail") inherits the old colour and mismatches — drop
+    // it for a clean, modern rounded bubble.
+    .message .tail { display: none !important; }
+
+    // Day separator ("21 July") — an <h6.day> that fell to the near-black
+    // heading colour, invisible on the dark chat. Muted, chip-like divider.
+    h6.day,
+    [data-region="day-container"] .day {
+        color: var(--poli-text-muted) !important;
+        font-weight: 600;
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+    }
 }
 
 .popover-region-notifications .popover-region-container::before,
